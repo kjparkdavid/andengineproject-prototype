@@ -58,8 +58,8 @@ public class ResourcesManager {
 	public BuildableBitmapTextureAtlas gameTextureAtlas;
 	public ITextureRegion blue_square, blue_square2, blue_square3,
 			blue_square4, green_square, green_square2, green_square3,
-			green_square4;
-	//5. Player asset
+			green_square4, game_background_region;
+	// 5. Player asset
 	public ITiledTextureRegion player_region;
 
 	// ---------------------------------------------
@@ -81,11 +81,11 @@ public class ResourcesManager {
 	private void loadMenuGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
 		menuTextureAtlas = new BuildableBitmapTextureAtlas(
-				activity.getTextureManager(), 1024, 1024,
+				activity.getTextureManager(), 1280, 1280,
 				TextureOptions.BILINEAR);
-		// menu_background_region =
-		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas,
-		// activity, "menu_background.png");
+		menu_background_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(menuTextureAtlas, activity,
+						"menu_background.png");
 		play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				menuTextureAtlas, activity, "play.png");
 		options_region = BitmapTextureAtlasTextureRegionFactory
@@ -128,29 +128,49 @@ public class ResourcesManager {
 
 	private void loadGameGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
-		gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR);
-		
-		//blue squares
-		blue_square = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "blue-square.png");
-//		blue_square2 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "blue-square.png");
-//		blue_square3 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "blue-square.png");
-//		blue_square4 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "blue-square.png");
-		//green squares
-		green_square = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "green-square.png");
-//		green_square2 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "green-square.png");
-//		green_square3 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "green-square.png");
-//		green_square4 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "green-square.png");
-		player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 3, 1); //3 columns, and 1 row
-		
-		 try 
-		    {
-		        this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
-		        this.gameTextureAtlas.load();
-		    } 
-		    catch (final TextureAtlasBuilderException e)
-		    {
-		        Debug.e(e);
-		    }
+		gameTextureAtlas = new BuildableBitmapTextureAtlas(
+				activity.getTextureManager(), 1280, 1280,
+				TextureOptions.BILINEAR);
+
+		game_background_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(gameTextureAtlas, activity,
+						"game_background.png");
+		// blue squares
+		blue_square = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "blue-square.png");
+		// blue_square2 =
+		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
+		// activity, "blue-square.png");
+		// blue_square3 =
+		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
+		// activity, "blue-square.png");
+		// blue_square4 =
+		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
+		// activity, "blue-square.png");
+		// green squares
+		green_square = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "green-square.png");
+		// green_square2 =
+		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
+		// activity, "green-square.png");
+		// green_square3 =
+		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
+		// activity, "green-square.png");
+		// green_square4 =
+		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
+		// activity, "green-square.png");
+		player_region = BitmapTextureAtlasTextureRegionFactory
+				.createTiledFromAsset(gameTextureAtlas, activity, "player.png",
+						3, 1); // 3 columns, and 1 row
+
+		try {
+			this.gameTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 1, 0));
+			this.gameTextureAtlas.load();
+		} catch (final TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
 	}
 
 	private void loadGameFonts() {

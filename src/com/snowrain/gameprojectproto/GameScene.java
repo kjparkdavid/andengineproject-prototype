@@ -22,7 +22,7 @@ public class GameScene extends BaseScene {
 	private Text scoreText;
 	private int score = 0;
 	private Sprite blue_square1, blue_square2, blue_square3, blue_square4,
-			green_square1, green_square2, green_square3, green_square4;
+			green_square1, green_square2, green_square3, green_square4, game_background;
 
 	private PhysicsWorld physicsWorld;
 
@@ -41,7 +41,9 @@ public class GameScene extends BaseScene {
 
 	@Override
 	public void createScene() {
+		
 		createBackground();
+		createPlayer(); // order matters must create after background in order to put it in front
 		createHUD();
 		createPhysics();
 	}
@@ -78,7 +80,7 @@ public class GameScene extends BaseScene {
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
 
-				player.startRunningToPoint(245, 215);
+				player.startRunningToPoint(160, 110);
 				return true;
 			}
 
@@ -94,7 +96,7 @@ public class GameScene extends BaseScene {
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
 
-				player.startRunningToPoint(390 + 105, 215);
+				player.startRunningToPoint(410, 110);
 				return true;
 			}
 		};
@@ -109,7 +111,7 @@ public class GameScene extends BaseScene {
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
 
-				player.startRunningToPoint(245, 360 + 125);
+				player.startRunningToPoint(160, 360 );
 				return true;
 			}
 		};
@@ -124,7 +126,7 @@ public class GameScene extends BaseScene {
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
 
-				player.startRunningToPoint(390 + 105, 360 + 105);
+				player.startRunningToPoint(410, 360);
 				return true;
 			}
 		};
@@ -192,12 +194,12 @@ public class GameScene extends BaseScene {
 				return true;
 			}
 		};
-		player = new Player(200, 150, vbom, camera, physicsWorld) {
-
+		game_background =  new Sprite(0, 0, resourcesManager.game_background_region,
+				vbom) {
 			@Override
-			public void onDie() {
-				// TODO Auto-generated method stub
-
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
 			}
 		};
 
@@ -218,8 +220,21 @@ public class GameScene extends BaseScene {
 		attachChild(green_square2);
 		attachChild(green_square3);
 		attachChild(green_square4);
-		attachChild(player);
+		attachChild(game_background);
+		
 
+	}
+	
+	private void createPlayer(){
+		player = new Player(160, 110, vbom, camera, physicsWorld) {
+
+			@Override
+			public void onDie() {
+				// TODO Auto-generated method stub
+
+			}
+		};
+		attachChild(player);
 	}
 
 	private void createHUD() {
