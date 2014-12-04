@@ -19,7 +19,7 @@ import com.snowrain.gameprojectproto.SceneManager.SceneType;
 public class GameScene extends BaseScene {
 
 	private HUD gameHUD;
-	private Text scoreText;
+	private Text skillText1, skillText2;
 	private int score = 0;
 	private Sprite blue_square1, blue_square2, blue_square3, blue_square4,
 			green_square1, green_square2, green_square3, green_square4, game_background;
@@ -243,19 +243,25 @@ public class GameScene extends BaseScene {
 		// CREATE SCORE TEXT
 		// IMPORTANT to put all 0123456789 in the text field to initiallize or
 		// it will lag
-		scoreText = new Text(20, 42, resourcesManager.font, "HP: 0123456789",
+		skillText1 = new Text(20, 650, resourcesManager.font, "Skill 1",
 				new TextOptions(HorizontalAlign.LEFT), vbom);
 		// scoreText.setAnchorCenter(0, 0);
-		scoreText.setText("Score: 0");
-		gameHUD.attachChild(scoreText);
+		skillText1.setText("Skill 1");
+		gameHUD.attachChild(skillText1);
+		
+		skillText2 = new Text(1100, 650, resourcesManager.font, "Skill 2",
+				new TextOptions(HorizontalAlign.LEFT), vbom);
+		// scoreText.setAnchorCenter(0, 0);
+		skillText2.setText("Skill 2");
+		gameHUD.attachChild(skillText2);
 
 		camera.setHUD(gameHUD);
 	}
 
-	private void addToScore(int i) {
-		score += i;
-		scoreText.setText("Score: " + score);
-	}
+//	private void addToScore(int i) {
+//		score += i;
+//		scoreText.setText("Score: " + score);
+//	}
 
 	private void createPhysics() {
 		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, -17), false);

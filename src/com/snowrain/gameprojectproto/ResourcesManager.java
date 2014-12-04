@@ -48,7 +48,7 @@ public class ResourcesManager {
 	// 2. Main menu asset
 	public ITextureRegion menu_background_region;
 	public ITextureRegion play_region;
-	public ITextureRegion options_region;
+	public ITextureRegion options_region, shop_region;
 	private BuildableBitmapTextureAtlas menuTextureAtlas;
 
 	// 3. Loading Scene
@@ -88,6 +88,8 @@ public class ResourcesManager {
 						"menu_background.png");
 		play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				menuTextureAtlas, activity, "play.png");
+		shop_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				menuTextureAtlas, activity, "shop.png");
 		options_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(menuTextureAtlas, activity, "options.png");
 
