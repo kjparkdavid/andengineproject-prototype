@@ -2,6 +2,7 @@ package com.snowrain.gameprojectproto;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
@@ -19,33 +20,37 @@ import com.snowrain.gameprojectproto.SceneManager.SceneType;
 public class GameScene extends BaseScene {
 
 	private HUD gameHUD;
-	private Text skillText1, skillText2;
+	private Text skillText1, skillText2, actionText;
 	private int score = 0;
 	private Sprite blue_square1, blue_square2, blue_square3, blue_square4,
-			green_square1, green_square2, green_square3, green_square4, game_background;
+			green_square1, green_square2, green_square3, green_square4,
+			game_background;
 
 	private PhysicsWorld physicsWorld;
+	private Player player, enemyPlayer;
 
-	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER = "player";
-	private Player player;
-
-	private static final String TAG_ENTITY = "entity";
-	private static final String TAG_ENTITY_ATTRIBUTE_X = "x";
-	private static final String TAG_ENTITY_ATTRIBUTE_Y = "y";
-	private static final String TAG_ENTITY_ATTRIBUTE_TYPE = "type";
-
-	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM1 = "platform1";
-	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM2 = "platform2";
-	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM3 = "platform3";
-	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN = "coin";
+	public static int B1 = 1, B2 = 2, B3 = 3, B4 = 4, R1 = 5, R2 = 6, R3 = 7,
+			R4 = 8;
+	private boolean playerTurn;
 
 	@Override
 	public void createScene() {
-		
+
+		createPlayer(); // order matters must create after background in order
+						// to put it in front
+		createEnemyPlayer();
 		createBackground();
-		createPlayer(); // order matters must create after background in order to put it in front
 		createHUD();
 		createPhysics();
+		attachAssets();
+		
+		this.registerUpdateHandler(new IUpdateHandler() {                    
+            public void reset() {        
+            }             
+            public void onUpdate(float pSecondsElapsed) {
+                //HERE IS THE GAME LOOP
+            }
+        });
 	}
 
 	@Override
@@ -69,133 +74,24 @@ public class GameScene extends BaseScene {
 
 	private void createBackground() {
 		setBackground(new Background(Color.BLUE));
-		blue_square1 = new Sprite(140, 110, resourcesManager.blue_square, vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-
-				player.startRunningToPoint(160, 110);
-				return true;
-			}
-
-		};
-		blue_square2 = new Sprite(390, 110, resourcesManager.blue_square, vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-
-				player.startRunningToPoint(410, 110);
-				return true;
-			}
-		};
-		blue_square3 = new Sprite(140, 360, resourcesManager.blue_square, vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-
-				player.startRunningToPoint(160, 360 );
-				return true;
-			}
-		};
-		blue_square4 = new Sprite(390, 360, resourcesManager.blue_square, vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-
-				player.startRunningToPoint(410, 360);
-				return true;
-			}
-		};
-		green_square1 = new Sprite(640, 110, resourcesManager.green_square,
-				vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-
-				player.startRunningToPoint(640 + 125, 235);
-				return true;
-			}
-		};
-		green_square2 = new Sprite(890, 110, resourcesManager.green_square,
-				vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-
-				player.startRunningToPoint(890 + 125, 235);
-				return true;
-			}
-		};
-		green_square3 = new Sprite(640, 360, resourcesManager.green_square,
-				vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-
-				player.startRunningToPoint(640 +125, 360 +125);
-				return true;
-			}
-		};
-		green_square4 = new Sprite(890, 360, resourcesManager.green_square,
-				vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-
-				player.startRunningToPoint(890 +125, 360 +125);
-				return true;
-			}
-		};
-		game_background =  new Sprite(0, 0, resourcesManager.game_background_region,
-				vbom) {
+		blue_square1 = new Tile(140, 110, 250, 250,
+				resourcesManager.blue_square, vbom, player, B1);
+		blue_square2 = new Tile(390, 110, 250, 250,
+				resourcesManager.blue_square, vbom, player, B2);
+		blue_square3 = new Tile(140, 360, 250, 250,
+				resourcesManager.blue_square, vbom, player, B3);
+		blue_square4 = new Tile(390, 360, 250, 250,
+				resourcesManager.blue_square, vbom, player, B4);
+		green_square1 = new Tile(640, 110, 250, 250,
+				resourcesManager.blue_square, vbom, player, R1);
+		green_square2 = new Tile(890, 110, 250, 250,
+				resourcesManager.blue_square, vbom, player, R2);
+		green_square3 = new Tile(640, 360, 250, 250,
+				resourcesManager.blue_square, vbom, player, R3);
+		green_square4 = new Tile(890, 360, 250, 250,
+				resourcesManager.blue_square, vbom, player, R4);
+		game_background = new Sprite(0, 0,
+				resourcesManager.game_background_region, vbom) {
 			@Override
 			protected void preDraw(GLState pGLState, Camera pCamera) {
 				super.preDraw(pGLState, pCamera);
@@ -207,11 +103,14 @@ public class GameScene extends BaseScene {
 		registerTouchArea(blue_square2);
 		registerTouchArea(blue_square3);
 		registerTouchArea(blue_square4);
-//		registerTouchArea(green_square1);
-//		registerTouchArea(green_square2);
-//		registerTouchArea(green_square3);
-//		registerTouchArea(green_square4);
+		// registerTouchArea(green_square1);
+		// registerTouchArea(green_square2);
+		// registerTouchArea(green_square3);
+		// registerTouchArea(green_square4);
 
+	}
+
+	private void attachAssets() {
 		attachChild(blue_square1);
 		attachChild(blue_square2);
 		attachChild(blue_square3);
@@ -221,12 +120,12 @@ public class GameScene extends BaseScene {
 		attachChild(green_square3);
 		attachChild(green_square4);
 		attachChild(game_background);
-		
-
+		attachChild(player);
+		attachChild(enemyPlayer);
 	}
-	
-	private void createPlayer(){
-		player = new Player(160, 110, vbom, camera, physicsWorld) {
+
+	private void createPlayer() {
+		player = new Player(160, 110, vbom, camera, physicsWorld, B1) {
 
 			@Override
 			public void onDie() {
@@ -234,7 +133,21 @@ public class GameScene extends BaseScene {
 
 			}
 		};
-		attachChild(player);
+
+	}
+
+	private void createEnemyPlayer() {
+		enemyPlayer = new Player(950, 140, vbom, camera, physicsWorld, R2) {
+
+			@Override
+			public void onDie() {
+				// TODO Auto-generated method stub
+
+			}
+		};
+		enemyPlayer.setFlippedHorizontal(true);
+		enemyPlayer.setColor(Color.RED);
+
 	}
 
 	private void createHUD() {
@@ -248,24 +161,36 @@ public class GameScene extends BaseScene {
 		// scoreText.setAnchorCenter(0, 0);
 		skillText1.setText("Skill 1");
 		gameHUD.attachChild(skillText1);
-		
+
 		skillText2 = new Text(1100, 650, resourcesManager.font, "Skill 2",
 				new TextOptions(HorizontalAlign.LEFT), vbom);
 		// scoreText.setAnchorCenter(0, 0);
 		skillText2.setText("Skill 2");
 		gameHUD.attachChild(skillText2);
-
+		
+		actionText = new Text(600, 650, resourcesManager.font, "Action Text",
+				new TextOptions(HorizontalAlign.CENTER), vbom);
+		actionText.setText("Your Turn!");
+		gameHUD.attachChild(actionText);
 		camera.setHUD(gameHUD);
 	}
 
-//	private void addToScore(int i) {
-//		score += i;
-//		scoreText.setText("Score: " + score);
-//	}
+	// private void addToScore(int i) {
+	// score += i;
+	// scoreText.setText("Score: " + score);
+	// }
 
 	private void createPhysics() {
 		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, -17), false);
 		registerUpdateHandler(physicsWorld);
+	}
+	
+	public boolean getPlayerTurn(){
+		return playerTurn;
+	}
+	
+	public void setPlayerTurn(boolean playerTurn){
+		this.playerTurn = playerTurn;
 	}
 
 	// private void loadLevel(int levelID)

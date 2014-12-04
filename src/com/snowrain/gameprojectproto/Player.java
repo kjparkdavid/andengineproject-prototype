@@ -17,18 +17,21 @@ public abstract class Player extends AnimatedSprite {
 	private Body body;
 
 	private boolean canRun = true;
+	
+	private int location;
 
 	// ---------------------------------------------
 	// CONSTRUCTOR
 	// ---------------------------------------------
 
 	public Player(float pX, float pY, VertexBufferObjectManager vbo,
-			Camera camera, PhysicsWorld physicsWorld) {
+			Camera camera, PhysicsWorld physicsWorld, int curLocation) {
 		super(pX, pY, ResourcesManager.getInstance().player_region, vbo);
 		// createPhysics(camera, physicsWorld);
 		// camera.setChaseEntity(this);
 		// startRunningToPoint();
 		// stopRunning();
+		location = curLocation;
 	}
 
 	public abstract void onDie();
@@ -80,7 +83,6 @@ public abstract class Player extends AnimatedSprite {
 				protected void onModifierStarted(IEntity pItem) {
 					super.onModifierStarted(pItem);
 					// Your action after starting modifier
-
 					setRunning();
 				}
 
@@ -99,5 +101,13 @@ public abstract class Player extends AnimatedSprite {
 	public void stopRunning() {
 		canRun = true;
 		stopAnimation(0);
+	}
+	
+	public void setLocation(int curLocation){
+		location = curLocation;
+	}
+	
+	public int getLocation(){
+		return location;
 	}
 }
