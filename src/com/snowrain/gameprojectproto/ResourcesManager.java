@@ -58,7 +58,7 @@ public class ResourcesManager {
 	public BuildableBitmapTextureAtlas gameTextureAtlas;
 	public ITextureRegion blue_square, blue_square2, blue_square3,
 			blue_square4, green_square, green_square2, green_square3,
-			green_square4, game_background_region;
+			green_square4, game_background_region, red_circle;
 	// 5. Player asset
 	public ITiledTextureRegion player_region;
 
@@ -110,7 +110,7 @@ public class ResourcesManager {
 	private void loadMenuFonts() {
 		FontFactory.setAssetBasePath("font/");
 		final ITexture mainFontTexture = new BitmapTextureAtlas(
-				activity.getTextureManager(), 256, 256,
+				activity.getTextureManager(), 256, 512,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 
 		font = FontFactory.createStrokeFromAsset(activity.getFontManager(),
@@ -152,6 +152,9 @@ public class ResourcesManager {
 		// green squares
 		green_square = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				gameTextureAtlas, activity, "green-square.png");
+		
+		red_circle = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "red_circle.png");
 		// green_square2 =
 		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
 		// activity, "green-square.png");

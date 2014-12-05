@@ -75,7 +75,7 @@ public abstract class Player extends AnimatedSprite {
 		animate(PLAYER_ANIMATE, 1, 2, true);
 	}
 
-	public void startRunningToPoint(float x, float y) {
+	public void startRunningToPoint(final float x, final float y) {
 		if (canRun) {
 			MoveModifier mod1 = new MoveModifier(1, this.getX(), x,
 					this.getY(), y) {
@@ -83,7 +83,11 @@ public abstract class Player extends AnimatedSprite {
 				protected void onModifierStarted(IEntity pItem) {
 					super.onModifierStarted(pItem);
 					// Your action after starting modifier
-					setRunning();
+					if(pItem.getX() == x && pItem.getY() == y){
+						return;
+					} else {
+						setRunning();
+					}
 				}
 
 				@Override
@@ -114,16 +118,16 @@ public abstract class Player extends AnimatedSprite {
 	public void enemyMovement(int movement) {
 		switch (movement) {
 		case 5:
-			startRunningToPoint(640, 110);
+			startRunningToPoint(680, 170);
 			break;
 		case 6:
-			startRunningToPoint(890, 110);
+			startRunningToPoint(990, 170);
 			break;
 		case 7:
-			startRunningToPoint(640, 360);
+			startRunningToPoint(680, 420);
 			break;
 		case 8:
-			startRunningToPoint(890, 360);
+			startRunningToPoint(990, 420);
 			break;
 		default:
 			break;

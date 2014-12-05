@@ -30,7 +30,7 @@ public class GameScene extends BaseScene {
 	private int score = 0;
 	private Sprite blue_square1, blue_square2, blue_square3, blue_square4,
 			green_square1, green_square2, green_square3, green_square4,
-			game_background;
+			game_background, red_circle;
 
 	private PhysicsWorld physicsWorld;
 	private Player player, enemyPlayer;
@@ -50,27 +50,29 @@ public class GameScene extends BaseScene {
 		myTurnReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				if (attackTurn) {
+				if (attackTurn) { // Player attack
 					Random r = new Random();
-					int clickedLoc = intent.getIntExtra("TileLoc", 1);
+					int attackLoc = intent.getIntExtra("TileLoc", 1);
 					int AIMovement = r.nextInt(9 - 5) + 5; // gives random
 															// number of
 															// 5 to 8
 					// Log.e("GameScene", "AI moved" + AIMovement);
 					enemyPlayer.enemyMovement(AIMovement);
+					showDemoBallFromPlayer(attackLoc);
 					// actionText.setText("You attacked " + clickedLoc);
-					if (clickedLoc == AIMovement) {
-						enemyPlayer.onDie();
+					if (attackLoc == AIMovement) {
+						enemyPlayer.onDie(); // ideally hp --;
 					} else { // End Turn: enemy turn to attack
 						endAttackTurn();
 					}
 				} else { // Player Defense turn
 					Random r = new Random();
-					int clickedLoc = intent.getIntExtra("TileLoc", 1);
+					int defenseLoc = intent.getIntExtra("TileLoc", 1);
 					int AIMovement = r.nextInt(5 - 1) + 1; // 1 to 4
 					// Log.e("GameScene", "AI attacked" + AIMovement);
-					if (clickedLoc == AIMovement) {
-						player.onDie();
+					showDemoBallFromEnemy(AIMovement);
+					if (defenseLoc == AIMovement) {
+						player.onDie(); // ideally hp --;
 					} else { // End Turn: your turn to attack
 						endDefenseTurn();
 					}
@@ -123,21 +125,21 @@ public class GameScene extends BaseScene {
 
 	private void createBackground() {
 		setBackground(new Background(Color.BLUE));
-		blue_square1 = new PlayerTile(140, 110, 250, 250,
+		blue_square1 = new PlayerTile(45, 170, 250, 250,
 				resourcesManager.blue_square, vbom, player, B1, activity);
-		blue_square2 = new PlayerTile(390, 110, 250, 250,
+		blue_square2 = new PlayerTile(355, 170, 250, 250,
 				resourcesManager.blue_square, vbom, player, B2, activity);
-		blue_square3 = new PlayerTile(140, 360, 250, 250,
+		blue_square3 = new PlayerTile(45, 420, 250, 250,
 				resourcesManager.blue_square, vbom, player, B3, activity);
-		blue_square4 = new PlayerTile(390, 360, 250, 250,
+		blue_square4 = new PlayerTile(355, 420, 250, 250,
 				resourcesManager.blue_square, vbom, player, B4, activity);
-		green_square1 = new EnemyTile(640, 110, 250, 250,
+		green_square1 = new EnemyTile(680, 170, 250, 250,
 				resourcesManager.blue_square, vbom, enemyPlayer, R1, activity);
-		green_square2 = new EnemyTile(890, 110, 250, 250,
+		green_square2 = new EnemyTile(990, 170, 250, 250,
 				resourcesManager.blue_square, vbom, enemyPlayer, R2, activity);
-		green_square3 = new EnemyTile(640, 360, 250, 250,
+		green_square3 = new EnemyTile(680, 420, 250, 250,
 				resourcesManager.blue_square, vbom, enemyPlayer, R3, activity);
-		green_square4 = new EnemyTile(890, 360, 250, 250,
+		green_square4 = new EnemyTile(990, 420, 250, 250,
 				resourcesManager.blue_square, vbom, enemyPlayer, R4, activity);
 		game_background = new Sprite(0, 0,
 				resourcesManager.game_background_region, vbom) {
@@ -160,6 +162,7 @@ public class GameScene extends BaseScene {
 	}
 
 	private void attachAssets() {
+
 		attachChild(blue_square1);
 		attachChild(blue_square2);
 		attachChild(blue_square3);
@@ -174,7 +177,7 @@ public class GameScene extends BaseScene {
 	}
 
 	private void createPlayer() {
-		player = new Player(160, 110, vbom, camera, physicsWorld, B1) {
+		player = new Player(45, 170, vbom, camera, physicsWorld, B1) {
 
 			@Override
 			public void onDie() {
@@ -186,7 +189,7 @@ public class GameScene extends BaseScene {
 	}
 
 	private void createEnemyPlayer() {
-		enemyPlayer = new Player(950, 140, vbom, camera, physicsWorld, R2) {
+		enemyPlayer = new Player(990, 170, vbom, camera, physicsWorld, R2) {
 
 			@Override
 			public void onDie() {
@@ -217,7 +220,7 @@ public class GameScene extends BaseScene {
 		skillText2.setText("Skill 2");
 		gameHUD.attachChild(skillText2);
 
-		actionText = new Text(550, 650, resourcesManager.font, "Action Text",
+		actionText = new Text(550, 550, resourcesManager.font, "your turn win lose!",
 				new TextOptions(HorizontalAlign.CENTER), vbom);
 		actionText.setText("Your Turn!");
 		gameHUD.attachChild(actionText);
@@ -244,6 +247,8 @@ public class GameScene extends BaseScene {
 	}
 
 	private void endDefenseTurn() {
+		// detachChild(red_circle);
+		actionText.setText("Your Turn!");
 		unregisterTouchArea(blue_square1);
 		unregisterTouchArea(blue_square2);
 		unregisterTouchArea(blue_square3);
@@ -256,6 +261,8 @@ public class GameScene extends BaseScene {
 	}
 
 	private void endAttackTurn() {
+		// detachChild(red_circle);
+		actionText.setText("Enemy Turn!");
 		registerTouchArea(blue_square1);
 		registerTouchArea(blue_square2);
 		registerTouchArea(blue_square3);
@@ -367,5 +374,114 @@ public class GameScene extends BaseScene {
 	// levelLoader.loadLevelFromAsset(activity.getAssets(), "level/" + levelID +
 	// ".lvl");
 	// }
+	private void showDemoBallFromPlayer(int loc) {
+		switch (loc) {
+		case 1:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(player.getX(), player.getY(),
+					resourcesManager.red_circle, vbom, 45, 170);
+			attachChild(red_circle);
+			break;
+		case 2:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(player.getX(), player.getY(),
+					resourcesManager.red_circle, vbom, 355, 170);
+			attachChild(red_circle);
+			break;
+		case 3:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(player.getX(), player.getY(),
+					resourcesManager.red_circle, vbom, 45, 420);
+			attachChild(red_circle);
+			break;
+		case 4:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(player.getX(), player.getY(),
+					resourcesManager.red_circle, vbom, 355, 420);
+			attachChild(red_circle);
+			break;
+		case 5:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(player.getX(), player.getY(),
+					resourcesManager.red_circle, vbom, 680, 170);
+			attachChild(red_circle);
+			break;
+		case 6:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(player.getX(), player.getY(),
+					resourcesManager.red_circle, vbom, 990, 170);
+			attachChild(red_circle);
+			break;
+		case 7:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(player.getX(), player.getY(),
+					resourcesManager.red_circle, vbom, 680, 420);
+			attachChild(red_circle);
+			break;
+		case 8:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(player.getX(), player.getY(),
+					resourcesManager.red_circle, vbom, 990, 420);
+			attachChild(red_circle);
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void showDemoBallFromEnemy(int loc) {
+		switch (loc) {
+		case 1:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
+					resourcesManager.red_circle, vbom, 45, 170);
+			attachChild(red_circle);
+			break;
+		case 2:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
+					resourcesManager.red_circle, vbom, 355, 170);
+			attachChild(red_circle);
+			break;
+		case 3:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
+					resourcesManager.red_circle, vbom, 45, 420);
+			attachChild(red_circle);
+			break;
+		case 4:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
+					resourcesManager.red_circle, vbom, 355, 420);
+			attachChild(red_circle);
+			break;
+		case 5:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
+					resourcesManager.red_circle, vbom, 680, 170);
+			attachChild(red_circle);
+			break;
+		case 6:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
+					resourcesManager.red_circle, vbom, 990, 170);
+			attachChild(red_circle);
+			break;
+		case 7:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
+					resourcesManager.red_circle, vbom, 680, 420);
+			attachChild(red_circle);
+			break;
+		case 8:
+			detachChild(red_circle);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
+					resourcesManager.red_circle, vbom, 990, 420);
+			attachChild(red_circle);
+			break;
+		default:
+			break;
+		}
+	}
 
 }
