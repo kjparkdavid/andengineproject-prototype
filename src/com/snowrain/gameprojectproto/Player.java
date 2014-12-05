@@ -17,7 +17,7 @@ public abstract class Player extends AnimatedSprite {
 	private Body body;
 
 	private boolean canRun = true;
-	
+
 	private int location;
 
 	// ---------------------------------------------
@@ -70,7 +70,7 @@ public abstract class Player extends AnimatedSprite {
 	public void setRunning() {
 		canRun = false;
 
-		final long[] PLAYER_ANIMATE = new long[] { 100, 100 }; //each frame
+		final long[] PLAYER_ANIMATE = new long[] { 100, 100 }; // each frame
 
 		animate(PLAYER_ANIMATE, 1, 2, true);
 	}
@@ -102,12 +102,31 @@ public abstract class Player extends AnimatedSprite {
 		canRun = true;
 		stopAnimation(0);
 	}
-	
-	public void setLocation(int curLocation){
+
+	public void setLocation(int curLocation) {
 		location = curLocation;
 	}
-	
-	public int getLocation(){
+
+	public int getLocation() {
 		return location;
+	}
+
+	public void enemyMovement(int movement) {
+		switch (movement) {
+		case 5:
+			startRunningToPoint(640, 110);
+			break;
+		case 6:
+			startRunningToPoint(890, 110);
+			break;
+		case 7:
+			startRunningToPoint(640, 360);
+			break;
+		case 8:
+			startRunningToPoint(890, 360);
+			break;
+		default:
+			break;
+		}
 	}
 }

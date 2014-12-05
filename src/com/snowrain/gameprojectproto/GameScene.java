@@ -1,18 +1,24 @@
 package com.snowrain.gameprojectproto;
 
+import java.util.Random;
+
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
-import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
-import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.badlogic.gdx.math.Vector2;
 import com.snowrain.gameprojectproto.SceneManager.SceneType;
@@ -31,10 +37,46 @@ public class GameScene extends BaseScene {
 
 	public static int B1 = 1, B2 = 2, B3 = 3, B4 = 4, R1 = 5, R2 = 6, R3 = 7,
 			R4 = 8;
-	private boolean playerTurn;
+	private boolean attackTurn;
+
+	private BroadcastReceiver myTurnReceiver;
 
 	@Override
 	public void createScene() {
+
+		// *********Set who attack first (true = player, false = AI)
+		attackTurn = true;
+
+		myTurnReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				if (attackTurn) {
+					Random r = new Random();
+					int clickedLoc = intent.getIntExtra("TileLoc", 1);
+					int AIMovement = r.nextInt(9 - 5) + 5; // gives random
+															// number of
+															// 5 to 8
+					// Log.e("GameScene", "AI moved" + AIMovement);
+					enemyPlayer.enemyMovement(AIMovement);
+					// actionText.setText("You attacked " + clickedLoc);
+					if (clickedLoc == AIMovement) {
+						enemyPlayer.onDie();
+					} else { // End Turn: enemy turn to attack
+						endAttackTurn();
+					}
+				} else { // Player Defense turn
+					Random r = new Random();
+					int clickedLoc = intent.getIntExtra("TileLoc", 1);
+					int AIMovement = r.nextInt(5 - 1) + 1; // 1 to 4
+					// Log.e("GameScene", "AI attacked" + AIMovement);
+					if (clickedLoc == AIMovement) {
+						player.onDie();
+					} else { // End Turn: your turn to attack
+						endDefenseTurn();
+					}
+				}
+			}
+		};
 
 		createPlayer(); // order matters must create after background in order
 						// to put it in front
@@ -43,14 +85,19 @@ public class GameScene extends BaseScene {
 		createHUD();
 		createPhysics();
 		attachAssets();
-		
-		this.registerUpdateHandler(new IUpdateHandler() {                    
-            public void reset() {        
-            }             
-            public void onUpdate(float pSecondsElapsed) {
-                //HERE IS THE GAME LOOP
-            }
-        });
+
+		LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(activity);
+		lbm.registerReceiver(myTurnReceiver, new IntentFilter("myTurnAction"));
+		// ********If game loop is required
+		// this.registerUpdateHandler(new IUpdateHandler() {
+		// public void reset() {
+		// }
+		//
+		// public void onUpdate(float pSecondsElapsed) {
+		// // HERE IS THE GAME LOOP
+		//
+		// }
+		// });
 	}
 
 	@Override
@@ -68,28 +115,30 @@ public class GameScene extends BaseScene {
 		camera.setHUD(null);
 		camera.setCenter(640, 360);
 
+		LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(activity);
+		lbm.unregisterReceiver(myTurnReceiver);
 		// TODO code responsible for disposing scene
 		// removing all game scene objects.
 	}
 
 	private void createBackground() {
 		setBackground(new Background(Color.BLUE));
-		blue_square1 = new Tile(140, 110, 250, 250,
-				resourcesManager.blue_square, vbom, player, B1);
-		blue_square2 = new Tile(390, 110, 250, 250,
-				resourcesManager.blue_square, vbom, player, B2);
-		blue_square3 = new Tile(140, 360, 250, 250,
-				resourcesManager.blue_square, vbom, player, B3);
-		blue_square4 = new Tile(390, 360, 250, 250,
-				resourcesManager.blue_square, vbom, player, B4);
-		green_square1 = new Tile(640, 110, 250, 250,
-				resourcesManager.blue_square, vbom, player, R1);
-		green_square2 = new Tile(890, 110, 250, 250,
-				resourcesManager.blue_square, vbom, player, R2);
-		green_square3 = new Tile(640, 360, 250, 250,
-				resourcesManager.blue_square, vbom, player, R3);
-		green_square4 = new Tile(890, 360, 250, 250,
-				resourcesManager.blue_square, vbom, player, R4);
+		blue_square1 = new PlayerTile(140, 110, 250, 250,
+				resourcesManager.blue_square, vbom, player, B1, activity);
+		blue_square2 = new PlayerTile(390, 110, 250, 250,
+				resourcesManager.blue_square, vbom, player, B2, activity);
+		blue_square3 = new PlayerTile(140, 360, 250, 250,
+				resourcesManager.blue_square, vbom, player, B3, activity);
+		blue_square4 = new PlayerTile(390, 360, 250, 250,
+				resourcesManager.blue_square, vbom, player, B4, activity);
+		green_square1 = new EnemyTile(640, 110, 250, 250,
+				resourcesManager.blue_square, vbom, enemyPlayer, R1, activity);
+		green_square2 = new EnemyTile(890, 110, 250, 250,
+				resourcesManager.blue_square, vbom, enemyPlayer, R2, activity);
+		green_square3 = new EnemyTile(640, 360, 250, 250,
+				resourcesManager.blue_square, vbom, enemyPlayer, R3, activity);
+		green_square4 = new EnemyTile(890, 360, 250, 250,
+				resourcesManager.blue_square, vbom, enemyPlayer, R4, activity);
 		game_background = new Sprite(0, 0,
 				resourcesManager.game_background_region, vbom) {
 			@Override
@@ -99,14 +148,14 @@ public class GameScene extends BaseScene {
 			}
 		};
 
-		registerTouchArea(blue_square1);
-		registerTouchArea(blue_square2);
-		registerTouchArea(blue_square3);
-		registerTouchArea(blue_square4);
-		// registerTouchArea(green_square1);
-		// registerTouchArea(green_square2);
-		// registerTouchArea(green_square3);
-		// registerTouchArea(green_square4);
+		// registerTouchArea(blue_square1);
+		// registerTouchArea(blue_square2);
+		// registerTouchArea(blue_square3);
+		// registerTouchArea(blue_square4);
+		registerTouchArea(green_square1);
+		registerTouchArea(green_square2);
+		registerTouchArea(green_square3);
+		registerTouchArea(green_square4);
 
 	}
 
@@ -130,7 +179,7 @@ public class GameScene extends BaseScene {
 			@Override
 			public void onDie() {
 				// TODO Auto-generated method stub
-
+				actionText.setText("You LOSE!!");
 			}
 		};
 
@@ -142,7 +191,7 @@ public class GameScene extends BaseScene {
 			@Override
 			public void onDie() {
 				// TODO Auto-generated method stub
-
+				actionText.setText("You WIN!!");
 			}
 		};
 		enemyPlayer.setFlippedHorizontal(true);
@@ -167,8 +216,8 @@ public class GameScene extends BaseScene {
 		// scoreText.setAnchorCenter(0, 0);
 		skillText2.setText("Skill 2");
 		gameHUD.attachChild(skillText2);
-		
-		actionText = new Text(600, 650, resourcesManager.font, "Action Text",
+
+		actionText = new Text(550, 650, resourcesManager.font, "Action Text",
 				new TextOptions(HorizontalAlign.CENTER), vbom);
 		actionText.setText("Your Turn!");
 		gameHUD.attachChild(actionText);
@@ -183,14 +232,39 @@ public class GameScene extends BaseScene {
 	private void createPhysics() {
 		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, -17), false);
 		registerUpdateHandler(physicsWorld);
+
 	}
-	
-	public boolean getPlayerTurn(){
-		return playerTurn;
+
+	public boolean getPlayerTurn() {
+		return attackTurn;
 	}
-	
-	public void setPlayerTurn(boolean playerTurn){
-		this.playerTurn = playerTurn;
+
+	public void setPlayerTurn(boolean playerTurn) {
+		this.attackTurn = playerTurn;
+	}
+
+	private void endDefenseTurn() {
+		unregisterTouchArea(blue_square1);
+		unregisterTouchArea(blue_square2);
+		unregisterTouchArea(blue_square3);
+		unregisterTouchArea(blue_square4);
+		registerTouchArea(green_square1);
+		registerTouchArea(green_square2);
+		registerTouchArea(green_square3);
+		registerTouchArea(green_square4);
+		attackTurn = true;
+	}
+
+	private void endAttackTurn() {
+		registerTouchArea(blue_square1);
+		registerTouchArea(blue_square2);
+		registerTouchArea(blue_square3);
+		registerTouchArea(blue_square4);
+		unregisterTouchArea(green_square1);
+		unregisterTouchArea(green_square2);
+		unregisterTouchArea(green_square3);
+		unregisterTouchArea(green_square4);
+		attackTurn = false;
 	}
 
 	// private void loadLevel(int levelID)

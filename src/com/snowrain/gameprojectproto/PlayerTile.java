@@ -2,13 +2,17 @@ package com.snowrain.gameprojectproto;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.sprite.Sprite;
-import org.andengine.entity.sprite.vbo.ISpriteVertexBufferObject;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.util.GLState;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-public class Tile extends Sprite {
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+
+public class PlayerTile extends Sprite {
 
 	private Player player;
 	private float locX, locY;
@@ -16,15 +20,18 @@ public class Tile extends Sprite {
 	private boolean isPlayerHere;
 	private boolean playerTurn;
 
-	public Tile(float pX, float pY, float pWidth, float pHeight,
+	private Context mContext;
+
+	public PlayerTile(float pX, float pY, float pWidth, float pHeight,
 			ITextureRegion pTextureRegion, VertexBufferObjectManager vbom,
-			Player player, int tileNumber) {
+			Player player, int tileNumber, Context context) {
 		super(pX, pY, pWidth, pHeight, pTextureRegion, vbom);
 		// TODO Auto-generated constructor stub
 		this.player = player;
 		this.locX = pX;
 		this.locY = pY;
 		this.tileNmber = tileNumber;
+		this.mContext = context;
 		isPlayerHere = false;
 	}
 
@@ -37,23 +44,30 @@ public class Tile extends Sprite {
 	@Override
 	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 			float pTouchAreaLocalX, float pTouchAreaLocalY) {
-
-		//if (!playerTurn) {
+		if (pSceneTouchEvent.isActionDown()) {
+			// if (!playerTurn) {
+			//Log.e("Tile", "touched" + tileNmber);
+			//****Player defense turn movement (when blue square is clicked)
+			
 			player.startRunningToPoint(locX, locY);
-			player.setLocation(tileNmber);
+			//player.setLocation(tileNmber);
+
+			Intent i = new Intent("myTurnAction");
+			i.putExtra("TileLoc", tileNmber);
+			LocalBroadcastManager.getInstance(mContext).sendBroadcast(i);
 			return true;
-		//}else{
-			//getTileNumber();
-		//}
-		
-		//return false;
+			// }else{
+			// getTileNumber();
+			// }
+		}
+		return false;
 	}
 
 	public int getTileNumber() {
 		return tileNmber;
 	}
-	
-	public void setPlayerTurn(boolean playerturn){
+
+	public void setPlayerTurn(boolean playerturn) {
 		this.playerTurn = playerturn;
 	}
 
