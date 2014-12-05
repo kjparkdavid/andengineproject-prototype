@@ -14,6 +14,7 @@ import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
@@ -31,10 +32,13 @@ public class GameScene extends BaseScene {
 
 	private HUD gameHUD;
 	private Text skillText1, skillText2, actionText;
+	// private Text shotText, moveText, skillText, restText, itemText;
 	private int score = 0;
 	private Sprite blue_square1, blue_square2, blue_square3, blue_square4,
 			green_square1, green_square2, green_square3, green_square4,
 			game_background, red_circle;
+	private Sprite demoActionButton1, demoActionButton2, demoActionButton3,
+			demoActionButton4;
 
 	private PhysicsWorld physicsWorld;
 	private Player player, enemyPlayer;
@@ -70,8 +74,17 @@ public class GameScene extends BaseScene {
 					showDemoBallFromPlayer(attackLoc);
 					// actionText.setText("You attacked " + clickedLoc);
 					if (attackLoc == AIMovement) {
-						if (catchsuccess < 20 && enemyPrevLoc == enemyPlayer.getLocation()) { // 10 percent of catching the ball and didn't move
-													
+						if (catchsuccess < 20
+								&& enemyPrevLoc == enemyPlayer.getLocation()) { // 10
+																				// percent
+																				// of
+																				// catching
+																				// the
+																				// ball
+																				// and
+																				// didn't
+																				// move
+
 							setActionTextBlinking("Catch Success!");
 						} else {
 							enemyPlayer.onDie(); // ideally hp --;
@@ -88,8 +101,17 @@ public class GameScene extends BaseScene {
 					player.setLocation(defenseLoc);
 					showDemoBallFromEnemy(AIMovement);
 					if (defenseLoc == AIMovement) {
-						if (catchsuccess < 20 && playerPrevLoc == player.getLocation()) { // 10 percent of catching the ball and didn't move
-							
+						if (catchsuccess < 20
+								&& playerPrevLoc == player.getLocation()) { // 10
+																			// percent
+																			// of
+																			// catching
+																			// the
+																			// ball
+																			// and
+																			// didn't
+																			// move
+
 							setActionTextBlinking("Catch Success!");
 						} else {
 							player.onDie(); // ideally hp --;
@@ -106,8 +128,11 @@ public class GameScene extends BaseScene {
 		createEnemyPlayer();
 		createBackground();
 		createHUD();
+
 		createPhysics();
 		attachAssets();
+
+		createActionOptions();
 
 		LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(activity);
 		lbm.registerReceiver(myTurnReceiver, new IntentFilter("myTurnAction"));
@@ -142,6 +167,7 @@ public class GameScene extends BaseScene {
 		lbm.unregisterReceiver(myTurnReceiver);
 		// TODO code responsible for disposing scene
 		// removing all game scene objects.
+		ResourcesManager.getInstance().unloadGameTextures();
 	}
 
 	private void createBackground() {
@@ -175,10 +201,10 @@ public class GameScene extends BaseScene {
 		// registerTouchArea(blue_square2);
 		// registerTouchArea(blue_square3);
 		// registerTouchArea(blue_square4);
-		registerTouchArea(green_square1);
-		registerTouchArea(green_square2);
-		registerTouchArea(green_square3);
-		registerTouchArea(green_square4);
+		// registerTouchArea(green_square1);
+		// registerTouchArea(green_square2);
+		// registerTouchArea(green_square3);
+		// registerTouchArea(green_square4);
 
 	}
 
@@ -231,17 +257,17 @@ public class GameScene extends BaseScene {
 		// CREATE SCORE TEXT
 		// IMPORTANT to put all 0123456789 in the text field to initiallize or
 		// it will lag
-		skillText1 = new Text(20, 650, resourcesManager.font, "Skill 1",
-				new TextOptions(HorizontalAlign.LEFT), vbom);
-		// scoreText.setAnchorCenter(0, 0);
-		skillText1.setText("Skill 1");
-		gameHUD.attachChild(skillText1);
-
-		skillText2 = new Text(1100, 650, resourcesManager.font, "Skill 2",
-				new TextOptions(HorizontalAlign.LEFT), vbom);
-		// scoreText.setAnchorCenter(0, 0);
-		skillText2.setText("Skill 2");
-		gameHUD.attachChild(skillText2);
+		// skillText1 = new Text(20, 650, resourcesManager.font, "Skill 1",
+		// new TextOptions(HorizontalAlign.LEFT), vbom);
+		// // scoreText.setAnchorCenter(0, 0);
+		// skillText1.setText("Skill 1");
+		// gameHUD.attachChild(skillText1);
+		//
+		// skillText2 = new Text(1100, 650, resourcesManager.font, "Skill 2",
+		// new TextOptions(HorizontalAlign.LEFT), vbom);
+		// // scoreText.setAnchorCenter(0, 0);
+		// skillText2.setText("Skill 2");
+		// gameHUD.attachChild(skillText2);
 
 		actionText = new Text(550, 550, resourcesManager.font,
 				"your turn win lose!", new TextOptions(HorizontalAlign.CENTER),
@@ -249,6 +275,61 @@ public class GameScene extends BaseScene {
 		actionText.setText("Your Turn!");
 		gameHUD.attachChild(actionText);
 		camera.setHUD(gameHUD);
+	}
+
+	private void createActionOptions() {
+		//Buttons on the left Layout 
+		/*demoActionButton1 = new Sprite(0, 160,
+				resourcesManager.demo_action_button, vbom){
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				registerTouchArea(green_square1);
+				registerTouchArea(green_square2);
+				registerTouchArea(green_square3);
+				registerTouchArea(green_square4);
+				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton1);
+				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton2);
+				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton3);
+				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton4);
+				unregisterTouchArea(demoActionButton1);
+				return true;
+			}
+		};
+		demoActionButton2 = new Sprite(0, 290,
+				resourcesManager.demo_action_button, vbom);
+		demoActionButton3 = new Sprite(0, 420,
+				resourcesManager.demo_action_button, vbom);
+		demoActionButton4 = new Sprite(0, 550,
+				resourcesManager.demo_action_button, vbom); */
+		demoActionButton1 = new Sprite( 160,600,
+				resourcesManager.demo_action_button, vbom){
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				registerTouchArea(green_square1);
+				registerTouchArea(green_square2);
+				registerTouchArea(green_square3);
+				registerTouchArea(green_square4);
+				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton1);
+				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton2);
+				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton3);
+				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton4);
+				unregisterTouchArea(demoActionButton1);
+				return true;
+			}
+		};
+		demoActionButton2 = new Sprite( 410,600,
+				resourcesManager.demo_action_button, vbom);
+		demoActionButton3 = new Sprite (660,600,
+				resourcesManager.demo_action_button, vbom);
+		demoActionButton4 = new Sprite(910,600, 
+				resourcesManager.demo_action_button, vbom); 
+		attachChild(demoActionButton1);
+		attachChild(demoActionButton2);
+		attachChild(demoActionButton3);
+		attachChild(demoActionButton4);
+		registerTouchArea(demoActionButton1);
 	}
 
 	// private void addToScore(int i) {
@@ -271,12 +352,7 @@ public class GameScene extends BaseScene {
 	}
 
 	private void endDefenseTurn() {
-		LoopEntityModifier blinkModifier = new LoopEntityModifier(
-				new SequenceEntityModifier(new FadeOutModifier(0.25f),
-						new FadeInModifier(0.25f)), 2);
-		// detachChild(red_circle);
-		actionText.setText("Your Turn!");
-		actionText.registerEntityModifier(blinkModifier);
+		setActionTextBlinking("Your Turn!");
 		unregisterTouchArea(blue_square1);
 		unregisterTouchArea(blue_square2);
 		unregisterTouchArea(blue_square3);
@@ -289,12 +365,7 @@ public class GameScene extends BaseScene {
 	}
 
 	private void endAttackTurn() {
-		LoopEntityModifier blinkModifier = new LoopEntityModifier(
-				new SequenceEntityModifier(new FadeOutModifier(0.25f),
-						new FadeInModifier(0.25f)), 2);
-		// detachChild(red_circle);
-		actionText.setText("Enemy Turn!");
-		actionText.registerEntityModifier(blinkModifier);
+		setActionTextBlinking("Enemy Turn!");
 		registerTouchArea(blue_square1);
 		registerTouchArea(blue_square2);
 		registerTouchArea(blue_square3);
@@ -305,8 +376,8 @@ public class GameScene extends BaseScene {
 		unregisterTouchArea(green_square4);
 		attackTurn = false;
 	}
-	
-	private void setActionTextBlinking(CharSequence text){
+
+	private void setActionTextBlinking(CharSequence text) {
 		LoopEntityModifier blinkModifier = new LoopEntityModifier(
 				new SequenceEntityModifier(new FadeOutModifier(0.25f),
 						new FadeInModifier(0.25f)), 2);

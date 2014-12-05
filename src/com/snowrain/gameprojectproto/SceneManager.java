@@ -136,7 +136,7 @@ public class SceneManager
     {
         setScene(loadingScene);
         gameScene.disposeScene();
-        ResourcesManager.getInstance().unloadGameTextures();
+        //ResourcesManager.getInstance().unloadGameTextures();
         mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() 
         {
             public void onTimePassed(final TimerHandler pTimerHandler) 

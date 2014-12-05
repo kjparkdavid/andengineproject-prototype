@@ -58,7 +58,7 @@ public class ResourcesManager {
 	public BuildableBitmapTextureAtlas gameTextureAtlas;
 	public ITextureRegion blue_square, blue_square2, blue_square3,
 			blue_square4, green_square, green_square2, green_square3,
-			green_square4, game_background_region, red_circle;
+			green_square4, game_background_region, red_circle, demo_action_button;
 	// 5. Player asset
 	public ITiledTextureRegion player_region;
 
@@ -150,11 +150,14 @@ public class ResourcesManager {
 		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
 		// activity, "blue-square.png");
 		// green squares
-		green_square = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				gameTextureAtlas, activity, "green-square.png");
+//		green_square = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+//				gameTextureAtlas, activity, "green-square.png");
 		
 		red_circle = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				gameTextureAtlas, activity, "red_circle.png");
+		
+		demo_action_button =  BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "demoActionButton.png");
 		// green_square2 =
 		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
 		// activity, "green-square.png");
@@ -188,6 +191,7 @@ public class ResourcesManager {
 
 	public void unloadGameTextures() {
 		// TODO (Since we did not create any textures for game scene yet)
+		gameTextureAtlas.unload();
 	}
 
 	public void loadSplashScreen() {
