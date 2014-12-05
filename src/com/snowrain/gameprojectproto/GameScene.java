@@ -4,6 +4,10 @@ import java.util.Random;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.entity.modifier.FadeInModifier;
+import org.andengine.entity.modifier.FadeOutModifier;
+import org.andengine.entity.modifier.LoopEntityModifier;
+import org.andengine.entity.modifier.SequenceEntityModifier;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
@@ -247,8 +251,11 @@ public class GameScene extends BaseScene {
 	}
 
 	private void endDefenseTurn() {
+		LoopEntityModifier blinkModifier = new LoopEntityModifier(
+			    new SequenceEntityModifier(new FadeOutModifier(0.25f), new FadeInModifier(0.25f)),2);
 		// detachChild(red_circle);
 		actionText.setText("Your Turn!");
+		actionText.registerEntityModifier(blinkModifier);
 		unregisterTouchArea(blue_square1);
 		unregisterTouchArea(blue_square2);
 		unregisterTouchArea(blue_square3);
@@ -261,8 +268,11 @@ public class GameScene extends BaseScene {
 	}
 
 	private void endAttackTurn() {
+		LoopEntityModifier blinkModifier = new LoopEntityModifier(
+			    new SequenceEntityModifier(new FadeOutModifier(0.25f), new FadeInModifier(0.25f)),2);
 		// detachChild(red_circle);
 		actionText.setText("Enemy Turn!");
+		actionText.registerEntityModifier(blinkModifier);
 		registerTouchArea(blue_square1);
 		registerTouchArea(blue_square2);
 		registerTouchArea(blue_square3);
@@ -483,5 +493,7 @@ public class GameScene extends BaseScene {
 			break;
 		}
 	}
+	
+	
 
 }
