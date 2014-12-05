@@ -54,29 +54,46 @@ public class GameScene extends BaseScene {
 		myTurnReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
+				Random r = new Random();
+				int catchsuccess = r.nextInt(100);
+
 				if (attackTurn) { // Player attack
-					Random r = new Random();
+
 					int attackLoc = intent.getIntExtra("TileLoc", 1);
 					int AIMovement = r.nextInt(9 - 5) + 5; // gives random
 															// number of
 															// 5 to 8
 					// Log.e("GameScene", "AI moved" + AIMovement);
+					int enemyPrevLoc = enemyPlayer.getLocation();
 					enemyPlayer.enemyMovement(AIMovement);
+					enemyPlayer.setLocation(AIMovement);
 					showDemoBallFromPlayer(attackLoc);
 					// actionText.setText("You attacked " + clickedLoc);
 					if (attackLoc == AIMovement) {
-						enemyPlayer.onDie(); // ideally hp --;
+						if (catchsuccess < 20 && enemyPrevLoc == enemyPlayer.getLocation()) { // 10 percent of catching the ball and didn't move
+													
+							setActionTextBlinking("Catch Success!");
+						} else {
+							enemyPlayer.onDie(); // ideally hp --;
+						}
 					} else { // End Turn: enemy turn to attack
 						endAttackTurn();
 					}
 				} else { // Player Defense turn
-					Random r = new Random();
+					// Random r = new Random();
 					int defenseLoc = intent.getIntExtra("TileLoc", 1);
 					int AIMovement = r.nextInt(5 - 1) + 1; // 1 to 4
 					// Log.e("GameScene", "AI attacked" + AIMovement);
+					int playerPrevLoc = player.getLocation();
+					player.setLocation(defenseLoc);
 					showDemoBallFromEnemy(AIMovement);
 					if (defenseLoc == AIMovement) {
-						player.onDie(); // ideally hp --;
+						if (catchsuccess < 20 && playerPrevLoc == player.getLocation()) { // 10 percent of catching the ball and didn't move
+							
+							setActionTextBlinking("Catch Success!");
+						} else {
+							player.onDie(); // ideally hp --;
+						}
 					} else { // End Turn: your turn to attack
 						endDefenseTurn();
 					}
@@ -189,6 +206,7 @@ public class GameScene extends BaseScene {
 				actionText.setText("You LOSE!!");
 			}
 		};
+		player.setLocation(B1);
 
 	}
 
@@ -203,6 +221,7 @@ public class GameScene extends BaseScene {
 		};
 		enemyPlayer.setFlippedHorizontal(true);
 		enemyPlayer.setColor(Color.RED);
+		enemyPlayer.setLocation(R2);
 
 	}
 
@@ -224,8 +243,9 @@ public class GameScene extends BaseScene {
 		skillText2.setText("Skill 2");
 		gameHUD.attachChild(skillText2);
 
-		actionText = new Text(550, 550, resourcesManager.font, "your turn win lose!",
-				new TextOptions(HorizontalAlign.CENTER), vbom);
+		actionText = new Text(550, 550, resourcesManager.font,
+				"your turn win lose!", new TextOptions(HorizontalAlign.CENTER),
+				vbom);
 		actionText.setText("Your Turn!");
 		gameHUD.attachChild(actionText);
 		camera.setHUD(gameHUD);
@@ -252,7 +272,8 @@ public class GameScene extends BaseScene {
 
 	private void endDefenseTurn() {
 		LoopEntityModifier blinkModifier = new LoopEntityModifier(
-			    new SequenceEntityModifier(new FadeOutModifier(0.25f), new FadeInModifier(0.25f)),2);
+				new SequenceEntityModifier(new FadeOutModifier(0.25f),
+						new FadeInModifier(0.25f)), 2);
 		// detachChild(red_circle);
 		actionText.setText("Your Turn!");
 		actionText.registerEntityModifier(blinkModifier);
@@ -269,7 +290,8 @@ public class GameScene extends BaseScene {
 
 	private void endAttackTurn() {
 		LoopEntityModifier blinkModifier = new LoopEntityModifier(
-			    new SequenceEntityModifier(new FadeOutModifier(0.25f), new FadeInModifier(0.25f)),2);
+				new SequenceEntityModifier(new FadeOutModifier(0.25f),
+						new FadeInModifier(0.25f)), 2);
 		// detachChild(red_circle);
 		actionText.setText("Enemy Turn!");
 		actionText.registerEntityModifier(blinkModifier);
@@ -282,6 +304,14 @@ public class GameScene extends BaseScene {
 		unregisterTouchArea(green_square3);
 		unregisterTouchArea(green_square4);
 		attackTurn = false;
+	}
+	
+	private void setActionTextBlinking(CharSequence text){
+		LoopEntityModifier blinkModifier = new LoopEntityModifier(
+				new SequenceEntityModifier(new FadeOutModifier(0.25f),
+						new FadeInModifier(0.25f)), 2);
+		actionText.setText(text);
+		actionText.registerEntityModifier(blinkModifier);
 	}
 
 	// private void loadLevel(int levelID)
@@ -443,57 +473,63 @@ public class GameScene extends BaseScene {
 		switch (loc) {
 		case 1:
 			detachChild(red_circle);
-			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
-					resourcesManager.red_circle, vbom, 45, 170);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(),
+					enemyPlayer.getY(), resourcesManager.red_circle, vbom, 45,
+					170);
 			attachChild(red_circle);
 			break;
 		case 2:
 			detachChild(red_circle);
-			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
-					resourcesManager.red_circle, vbom, 355, 170);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(),
+					enemyPlayer.getY(), resourcesManager.red_circle, vbom, 355,
+					170);
 			attachChild(red_circle);
 			break;
 		case 3:
 			detachChild(red_circle);
-			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
-					resourcesManager.red_circle, vbom, 45, 420);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(),
+					enemyPlayer.getY(), resourcesManager.red_circle, vbom, 45,
+					420);
 			attachChild(red_circle);
 			break;
 		case 4:
 			detachChild(red_circle);
-			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
-					resourcesManager.red_circle, vbom, 355, 420);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(),
+					enemyPlayer.getY(), resourcesManager.red_circle, vbom, 355,
+					420);
 			attachChild(red_circle);
 			break;
 		case 5:
 			detachChild(red_circle);
-			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
-					resourcesManager.red_circle, vbom, 680, 170);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(),
+					enemyPlayer.getY(), resourcesManager.red_circle, vbom, 680,
+					170);
 			attachChild(red_circle);
 			break;
 		case 6:
 			detachChild(red_circle);
-			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
-					resourcesManager.red_circle, vbom, 990, 170);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(),
+					enemyPlayer.getY(), resourcesManager.red_circle, vbom, 990,
+					170);
 			attachChild(red_circle);
 			break;
 		case 7:
 			detachChild(red_circle);
-			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
-					resourcesManager.red_circle, vbom, 680, 420);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(),
+					enemyPlayer.getY(), resourcesManager.red_circle, vbom, 680,
+					420);
 			attachChild(red_circle);
 			break;
 		case 8:
 			detachChild(red_circle);
-			red_circle = new DemoBallAttack(enemyPlayer.getX(), enemyPlayer.getY(),
-					resourcesManager.red_circle, vbom, 990, 420);
+			red_circle = new DemoBallAttack(enemyPlayer.getX(),
+					enemyPlayer.getY(), resourcesManager.red_circle, vbom, 990,
+					420);
 			attachChild(red_circle);
 			break;
 		default:
 			break;
 		}
 	}
-	
-	
 
 }
