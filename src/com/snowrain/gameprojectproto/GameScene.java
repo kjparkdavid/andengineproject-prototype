@@ -61,7 +61,7 @@ public class GameScene extends BaseScene {
 				Random r = new Random();
 				int catchsuccess = r.nextInt(100);
 
-				if (attackTurn) { // Player attack
+				if (attackTurn) { // Player attack (click on red tiles)
 
 					int attackLoc = intent.getIntExtra("TileLoc", 1);
 					int AIMovement = r.nextInt(9 - 5) + 5; // gives random
@@ -92,7 +92,7 @@ public class GameScene extends BaseScene {
 					} else { // End Turn: enemy turn to attack
 						endAttackTurn();
 					}
-				} else { // Player Defense turn
+				} else { // Player Defense turn (clicks on blue tile)
 					// Random r = new Random();
 					int defenseLoc = intent.getIntExtra("TileLoc", 1);
 					int AIMovement = r.nextInt(5 - 1) + 1; // 1 to 4
@@ -278,58 +278,56 @@ public class GameScene extends BaseScene {
 	}
 
 	private void createActionOptions() {
-		//Buttons on the left Layout 
-		/*demoActionButton1 = new Sprite(0, 160,
-				resourcesManager.demo_action_button, vbom){
+		// Buttons on the left Layout
+		/*
+		 * demoActionButton1 = new Sprite(0, 160,
+		 * resourcesManager.demo_action_button, vbom){
+		 * 
+		 * @Override public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+		 * float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		 * registerTouchArea(green_square1); registerTouchArea(green_square2);
+		 * registerTouchArea(green_square3); registerTouchArea(green_square4);
+		 * SceneManager
+		 * .getInstance().getCurrentScene().detachChild(demoActionButton1);
+		 * SceneManager
+		 * .getInstance().getCurrentScene().detachChild(demoActionButton2);
+		 * SceneManager
+		 * .getInstance().getCurrentScene().detachChild(demoActionButton3);
+		 * SceneManager
+		 * .getInstance().getCurrentScene().detachChild(demoActionButton4);
+		 * unregisterTouchArea(demoActionButton1); return true; } };
+		 * demoActionButton2 = new Sprite(0, 290,
+		 * resourcesManager.demo_action_button, vbom); demoActionButton3 = new
+		 * Sprite(0, 420, resourcesManager.demo_action_button, vbom);
+		 * demoActionButton4 = new Sprite(0, 550,
+		 * resourcesManager.demo_action_button, vbom);
+		 */
+		demoActionButton1 = new Sprite(160, 600,
+				resourcesManager.demo_action_button, vbom) {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				registerTouchArea(green_square1);
-				registerTouchArea(green_square2);
-				registerTouchArea(green_square3);
-				registerTouchArea(green_square4);
-				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton1);
-				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton2);
-				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton3);
-				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton4);
-				unregisterTouchArea(demoActionButton1);
+				enableAttack();
+				hideActionButtons();
+
 				return true;
 			}
 		};
-		demoActionButton2 = new Sprite(0, 290,
-				resourcesManager.demo_action_button, vbom);
-		demoActionButton3 = new Sprite(0, 420,
-				resourcesManager.demo_action_button, vbom);
-		demoActionButton4 = new Sprite(0, 550,
-				resourcesManager.demo_action_button, vbom); */
-		demoActionButton1 = new Sprite( 160,600,
-				resourcesManager.demo_action_button, vbom){
+		demoActionButton2 = new Sprite(410, 600,
+				resourcesManager.demo_action_button, vbom) {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				registerTouchArea(green_square1);
-				registerTouchArea(green_square2);
-				registerTouchArea(green_square3);
-				registerTouchArea(green_square4);
-				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton1);
-				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton2);
-				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton3);
-				SceneManager.getInstance().getCurrentScene().detachChild(demoActionButton4);
-				unregisterTouchArea(demoActionButton1);
+				enableDefence(); //movement in playertile
+				hideActionButtons();
 				return true;
 			}
 		};
-		demoActionButton2 = new Sprite( 410,600,
+		demoActionButton3 = new Sprite(660, 600,
 				resourcesManager.demo_action_button, vbom);
-		demoActionButton3 = new Sprite (660,600,
+		demoActionButton4 = new Sprite(910, 600,
 				resourcesManager.demo_action_button, vbom);
-		demoActionButton4 = new Sprite(910,600, 
-				resourcesManager.demo_action_button, vbom); 
-		attachChild(demoActionButton1);
-		attachChild(demoActionButton2);
-		attachChild(demoActionButton3);
-		attachChild(demoActionButton4);
-		registerTouchArea(demoActionButton1);
+		showAttackActionButtons(); //show buttons when game starts
 	}
 
 	// private void addToScore(int i) {
@@ -353,30 +351,29 @@ public class GameScene extends BaseScene {
 
 	private void endDefenseTurn() {
 		setActionTextBlinking("Your Turn!");
-		unregisterTouchArea(blue_square1);
-		unregisterTouchArea(blue_square2);
-		unregisterTouchArea(blue_square3);
-		unregisterTouchArea(blue_square4);
-		registerTouchArea(green_square1);
-		registerTouchArea(green_square2);
-		registerTouchArea(green_square3);
-		registerTouchArea(green_square4);
+		showAttackActionButtons();
+		unregisterAllTiles();
+//		unregisterTouchArea(blue_square1);
+//		unregisterTouchArea(blue_square2);
+//		unregisterTouchArea(blue_square3);
+//		unregisterTouchArea(blue_square4);
+//		registerGreenTiles(); //can click enemy tile
 		attackTurn = true;
 	}
 
 	private void endAttackTurn() {
 		setActionTextBlinking("Enemy Turn!");
-		registerTouchArea(blue_square1);
-		registerTouchArea(blue_square2);
-		registerTouchArea(blue_square3);
-		registerTouchArea(blue_square4);
-		unregisterTouchArea(green_square1);
-		unregisterTouchArea(green_square2);
-		unregisterTouchArea(green_square3);
-		unregisterTouchArea(green_square4);
+		showDefenceActionButtons();
+		unregisterAllTiles();
+//		registerBlueTiles(); //can click player tile
+//		unregisterTouchArea(green_square1);
+//		unregisterTouchArea(green_square2);
+//		unregisterTouchArea(green_square3);
+//		unregisterTouchArea(green_square4);
 		attackTurn = false;
 	}
 
+	
 	private void setActionTextBlinking(CharSequence text) {
 		LoopEntityModifier blinkModifier = new LoopEntityModifier(
 				new SequenceEntityModifier(new FadeOutModifier(0.25f),
@@ -601,6 +598,73 @@ public class GameScene extends BaseScene {
 		default:
 			break;
 		}
+	}
+
+	private void enableAttack() {
+		registerTouchArea(green_square1);
+		registerTouchArea(green_square2);
+		registerTouchArea(green_square3);
+		registerTouchArea(green_square4);
+	}
+	
+	private void enableDefence() {
+		registerTouchArea(blue_square1);
+		registerTouchArea(blue_square2);
+		registerTouchArea(blue_square3);
+		registerTouchArea(blue_square4);
+	}
+
+
+	private void hideActionButtons() {
+		SceneManager.getInstance().getCurrentScene()
+				.detachChild(demoActionButton1);
+		SceneManager.getInstance().getCurrentScene()
+				.detachChild(demoActionButton2);
+		SceneManager.getInstance().getCurrentScene()
+				.detachChild(demoActionButton3);
+		SceneManager.getInstance().getCurrentScene()
+				.detachChild(demoActionButton4);
+
+		unregisterTouchArea(demoActionButton1);
+		unregisterTouchArea(demoActionButton2);
+		unregisterTouchArea(demoActionButton3);
+		unregisterTouchArea(demoActionButton4);
+	}
+
+	private void showAttackActionButtons() {
+		attachChild(demoActionButton1);
+		//attachChild(demoActionButton2);
+		attachChild(demoActionButton3);
+		attachChild(demoActionButton4);
+
+		registerTouchArea(demoActionButton1);
+		//registerTouchArea(demoActionButton2);
+		registerTouchArea(demoActionButton3);
+		registerTouchArea(demoActionButton4);
+	}
+	
+	private void showDefenceActionButtons() {
+		//attachChild(demoActionButton1);
+		attachChild(demoActionButton2);
+		attachChild(demoActionButton3);
+		attachChild(demoActionButton4);
+
+		//registerTouchArea(demoActionButton1);
+		registerTouchArea(demoActionButton2);
+		registerTouchArea(demoActionButton3);
+		registerTouchArea(demoActionButton4);
+	}
+	
+	private void unregisterAllTiles(){
+		unregisterTouchArea(blue_square1);
+		unregisterTouchArea(blue_square2);
+		unregisterTouchArea(blue_square3);
+		unregisterTouchArea(blue_square4);
+		
+		unregisterTouchArea(green_square1);
+		unregisterTouchArea(green_square2);
+		unregisterTouchArea(green_square3);
+		unregisterTouchArea(green_square4);
 	}
 
 }
