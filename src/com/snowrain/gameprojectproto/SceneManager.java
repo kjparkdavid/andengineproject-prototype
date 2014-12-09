@@ -16,7 +16,7 @@ public class SceneManager
     private BaseScene menuScene;
     private BaseScene gameScene;
     private BaseScene loadingScene;
-    
+    private BaseScene optionScene;
     //---------------------------------------------
     // VARIABLES
     //---------------------------------------------
@@ -144,6 +144,36 @@ public class SceneManager
                 mEngine.unregisterUpdateHandler(pTimerHandler);
                 ResourcesManager.getInstance().loadMenuTextures();
                 setScene(menuScene);
+            }
+        }));
+    }
+    public void createOptionsScene (final Engine MEngine)
+    {
+        ResourcesManager.getInstance().loadOptionResources();
+        optionScene = new OptionScene();
+        SceneManager.getInstance().setScene(optionScene);
+        disposeOptionScene();
+    }
+    private void disposeOptionScene ()
+    {
+    	ResourcesManager.getInstance().unloadOptionScene();
+        optionScene.disposeScene();
+        optionScene = null;
+    }
+    public void loadOptionScene(final Engine mEngine)
+    {
+        setScene(loadingScene);
+        ResourcesManager.getInstance().unloadMenuTextures(); //unload Mainmenu stuff
+      //  gameScene.disposeScene();
+        //ResourcesManager.getInstance().unloadGameTextures();
+        mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() 
+        {
+            public void onTimePassed(final TimerHandler pTimerHandler) 
+            {
+                mEngine.unregisterUpdateHandler(pTimerHandler);
+                ResourcesManager.getInstance().loadOptionResources();//load resource
+                optionScene = new OptionScene(); //need to make new scene
+                setScene(optionScene); //and then set scene
             }
         }));
     }

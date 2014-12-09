@@ -61,11 +61,21 @@ public class ResourcesManager {
 			green_square4, game_background_region, red_circle, demo_action_button;
 	// 5. Player asset
 	public ITiledTextureRegion player_region;
+	
+	// 6. Setting asset
+	public ITextureRegion option_background_region;
+	private BuildableBitmapTextureAtlas settingTextureAtlas;
+	private ITexture optionTexture;
+	private ITextureRegion option_region;
 
 	// ---------------------------------------------
 	// CLASS LOGIC
 	// ---------------------------------------------
 
+	public void loadOptionResources() {
+		loadOptionGraphics();
+	}
+	
 	public void loadMenuResources() {
 		loadMenuGraphics();
 		loadMenuAudio();
@@ -223,6 +233,11 @@ public class ResourcesManager {
 		splashTexture.unload();
 		splash_region = null;
 	}
+	
+	public void unloadOptionScene() {
+		optionTexture.unload();
+		option_region = null;
+	}
 
 	/**
 	 * @param engine
@@ -241,6 +256,30 @@ public class ResourcesManager {
 		getInstance().activity = activity;
 		getInstance().camera = camera;
 		getInstance().vbom = vbom;
+	}
+	private void loadOptionGraphics() {
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/setting/");
+		settingTextureAtlas = new BuildableBitmapTextureAtlas(
+				activity.getTextureManager(), 1280, 1280,
+				TextureOptions.BILINEAR);
+		option_background_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(settingTextureAtlas, activity,
+						"option_background.jpg");
+//		play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+//				settingTextureAtlas, activity, "play.png");
+//		shop_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+//				settingTextureAtlas, activity, "shop.png");
+//		options_region = BitmapTextureAtlasTextureRegionFactory
+//				.createFromAsset(settingTextureAtlas, activity, "options.png");
+
+		try {
+			this.settingTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 1, 0));
+			this.settingTextureAtlas.load();
+		} catch (final TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
 	}
 
 	// ---------------------------------------------

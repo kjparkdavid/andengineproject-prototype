@@ -93,6 +93,7 @@ public class MainMenuScene extends BaseScene implements
 			SceneManager.getInstance().loadGameScene(engine);
 			return true;
 		case MENU_OPTIONS: //add open option scene later
+			SceneManager.getInstance().loadOptionScene(engine);
 			return true;
 		case MENU_SHOP://add open shop scene later
 			return true;
