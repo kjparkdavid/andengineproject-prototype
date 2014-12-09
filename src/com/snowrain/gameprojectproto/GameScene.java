@@ -8,7 +8,11 @@ import org.andengine.entity.modifier.FadeInModifier;
 import org.andengine.entity.modifier.FadeOutModifier;
 import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.SequenceEntityModifier;
+import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.background.Background;
+import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.sprite.AnimatedSprite.IAnimationListener;
+import org.andengine.entity.sprite.IAnimationData;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
@@ -21,6 +25,7 @@ import org.andengine.util.color.Color;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Entity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
@@ -34,14 +39,18 @@ public class GameScene extends BaseScene {
 	private Text skillText1, skillText2, actionText;
 	// private Text shotText, moveText, skillText, restText, itemText;
 	private int score = 0;
-	private Sprite blue_square1, blue_square2, blue_square3, blue_square4,
-			green_square1, green_square2, green_square3, green_square4,
-			game_background, red_circle;
-	private Sprite demoActionButton1, demoActionButton2, demoActionButton3,
-			demoActionButton4;
+	private Rectangle blue_square1, blue_square2, blue_square3, blue_square4,
+			green_square1, green_square2, green_square3, green_square4;
+	private org.andengine.entity.Entity playerTileGroup, enemyTileGroup;
+	private Sprite game_background, red_circle;
+	private Sprite shotActionButton, moveActionButton, skillActionButton,
+			itemActionButton;
+	private Rectangle flash_effect;
 
 	private PhysicsWorld physicsWorld;
 	private Player player, enemyPlayer;
+
+	private AnimatedSprite battleStartAnimation;
 
 	public static int B1 = 1, B2 = 2, B3 = 3, B4 = 4, R1 = 5, R2 = 6, R3 = 7,
 			R4 = 8;
@@ -133,6 +142,7 @@ public class GameScene extends BaseScene {
 		attachAssets();
 
 		createActionOptions();
+		createStartBattleAnimation();
 
 		LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(activity);
 		lbm.registerReceiver(myTurnReceiver, new IntentFilter("myTurnAction"));
@@ -146,6 +156,54 @@ public class GameScene extends BaseScene {
 		//
 		// }
 		// });
+	}
+
+	private void createStartBattleAnimation() {
+		// flash_effect = new Rectangle(0, 0, 1280, 720, vbom);
+		// flash_effect.setColor(Color.WHITE);
+		battleStartAnimation = new AnimatedSprite(320, 180,
+				resourcesManager.battleStartRegion, vbom);
+		battleStartAnimation.setScale(2.0f);
+		// attachChild(flash_effect);
+		attachChild(battleStartAnimation);
+		// flash_effect.setVisible(false);
+		battleStartAnimation.animate(new long[] { 800, 250 }, false,
+				new IAnimationListener() {
+
+					@Override
+					public void onAnimationLoopFinished(
+							AnimatedSprite pAnimatedSprite,
+							int pRemainingLoopCount, int pInitialLoopCount) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onAnimationFrameChanged(
+							AnimatedSprite pAnimatedSprite, int pOldFrameIndex,
+							int pNewFrameIndex) {
+						// TODO Auto-generated method stub
+						// flash_effect.setVisible(false);
+					}
+
+					@Override
+					public void onAnimationFinished(
+							AnimatedSprite pAnimatedSprite) {
+						// TODO Auto-generated method stub
+						SceneManager.getInstance().getCurrentScene()
+								.detachChild(battleStartAnimation);
+						// SceneManager.getInstance().getCurrentScene().detachChild(flash_effect);
+					}
+
+					@Override
+					public void onAnimationStarted(
+							AnimatedSprite pAnimatedSprite,
+							int pInitialLoopCount) {
+						// TODO Auto-generated method stub
+
+						// flash_effect.setVisible(true);
+					}
+				});
 	}
 
 	@Override
@@ -172,22 +230,22 @@ public class GameScene extends BaseScene {
 
 	private void createBackground() {
 		setBackground(new Background(Color.BLUE));
-		blue_square1 = new PlayerTile(45, 170, 250, 250,
-				resourcesManager.blue_square, vbom, player, B1, activity);
-		blue_square2 = new PlayerTile(355, 170, 250, 250,
-				resourcesManager.blue_square, vbom, player, B2, activity);
-		blue_square3 = new PlayerTile(45, 420, 250, 250,
-				resourcesManager.blue_square, vbom, player, B3, activity);
-		blue_square4 = new PlayerTile(355, 420, 250, 250,
-				resourcesManager.blue_square, vbom, player, B4, activity);
-		green_square1 = new EnemyTile(680, 170, 250, 250,
-				resourcesManager.blue_square, vbom, enemyPlayer, R1, activity);
-		green_square2 = new EnemyTile(990, 170, 250, 250,
-				resourcesManager.blue_square, vbom, enemyPlayer, R2, activity);
-		green_square3 = new EnemyTile(680, 420, 250, 250,
-				resourcesManager.blue_square, vbom, enemyPlayer, R3, activity);
-		green_square4 = new EnemyTile(990, 420, 250, 250,
-				resourcesManager.blue_square, vbom, enemyPlayer, R4, activity);
+		blue_square1 = new PlayerTile(45, 170, 250, 250, vbom, player, B1,
+				activity);
+		blue_square2 = new PlayerTile(355, 170, 250, 250, vbom, player, B2,
+				activity);
+		blue_square3 = new PlayerTile(45, 420, 250, 250, vbom, player, B3,
+				activity);
+		blue_square4 = new PlayerTile(355, 420, 250, 250, vbom, player, B4,
+				activity);
+		green_square1 = new EnemyTile(680, 170, 250, 250, vbom, enemyPlayer,
+				R1, activity);
+		green_square2 = new EnemyTile(990, 170, 250, 250, vbom, enemyPlayer,
+				R2, activity);
+		green_square3 = new EnemyTile(680, 420, 250, 250, vbom, enemyPlayer,
+				R3, activity);
+		green_square4 = new EnemyTile(990, 420, 250, 250, vbom, enemyPlayer,
+				R4, activity);
 		game_background = new Sprite(0, 0,
 				resourcesManager.game_background_region, vbom) {
 			@Override
@@ -209,18 +267,25 @@ public class GameScene extends BaseScene {
 	}
 
 	private void attachAssets() {
-
-		attachChild(blue_square1);
-		attachChild(blue_square2);
-		attachChild(blue_square3);
-		attachChild(blue_square4);
-		attachChild(green_square1);
-		attachChild(green_square2);
-		attachChild(green_square3);
-		attachChild(green_square4);
+		//Make tile Layer
+		playerTileGroup = new org.andengine.entity.Entity();
+		enemyTileGroup = new org.andengine.entity.Entity();
+		playerTileGroup.attachChild(blue_square1);
+		playerTileGroup.attachChild(blue_square2);
+		playerTileGroup.attachChild(blue_square3);
+		playerTileGroup.attachChild(blue_square4);
+		enemyTileGroup.attachChild(green_square1);
+		enemyTileGroup.attachChild(green_square2);
+		enemyTileGroup.attachChild(green_square3);
+		enemyTileGroup.attachChild(green_square4);
+//		attachChild(enemyTileGroup);
+//		attachChild(playerTileGroup);
 		attachChild(game_background);
 		attachChild(player);
 		attachChild(enemyPlayer);
+		attachChild(enemyTileGroup);
+		attachChild(playerTileGroup);
+
 	}
 
 	private void createPlayer() {
@@ -302,8 +367,8 @@ public class GameScene extends BaseScene {
 		 * demoActionButton4 = new Sprite(0, 550,
 		 * resourcesManager.demo_action_button, vbom);
 		 */
-		demoActionButton1 = new Sprite(160, 600,
-				resourcesManager.demo_action_button, vbom) {
+		shotActionButton = new Sprite(300, 600, 225, 120,
+				resourcesManager.shotActionButton, vbom) {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -313,21 +378,36 @@ public class GameScene extends BaseScene {
 				return true;
 			}
 		};
-		demoActionButton2 = new Sprite(410, 600,
-				resourcesManager.demo_action_button, vbom) {
+		moveActionButton = new Sprite(300, 600, 225, 120,
+				resourcesManager.moveActionButton, vbom) {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				enableDefence(); //movement in playertile
+				enableDefence(); // movement in playertile
 				hideActionButtons();
 				return true;
 			}
 		};
-		demoActionButton3 = new Sprite(660, 600,
-				resourcesManager.demo_action_button, vbom);
-		demoActionButton4 = new Sprite(910, 600,
-				resourcesManager.demo_action_button, vbom);
-		showAttackActionButtons(); //show buttons when game starts
+		skillActionButton = new Sprite(550, 600, 225, 120,
+				resourcesManager.skillActionButton, vbom);
+
+		itemActionButton = new Sprite(800, 600, 225, 120,
+				resourcesManager.itemActionButton, vbom);
+		// showAttackActionButtons();
+
+		// initialize buttons when game starts
+		attachChild(shotActionButton);
+		attachChild(moveActionButton);
+		attachChild(skillActionButton);
+		attachChild(itemActionButton);
+
+		moveActionButton.setVisible(false);
+
+		registerTouchArea(shotActionButton);
+		// registerTouchArea(demoActionButton2);
+		registerTouchArea(skillActionButton);
+		registerTouchArea(itemActionButton);
+
 	}
 
 	// private void addToScore(int i) {
@@ -353,11 +433,11 @@ public class GameScene extends BaseScene {
 		setActionTextBlinking("Your Turn!");
 		showAttackActionButtons();
 		unregisterAllTiles();
-//		unregisterTouchArea(blue_square1);
-//		unregisterTouchArea(blue_square2);
-//		unregisterTouchArea(blue_square3);
-//		unregisterTouchArea(blue_square4);
-//		registerGreenTiles(); //can click enemy tile
+		// unregisterTouchArea(blue_square1);
+		// unregisterTouchArea(blue_square2);
+		// unregisterTouchArea(blue_square3);
+		// unregisterTouchArea(blue_square4);
+		// registerGreenTiles(); //can click enemy tile
 		attackTurn = true;
 	}
 
@@ -365,15 +445,14 @@ public class GameScene extends BaseScene {
 		setActionTextBlinking("Enemy Turn!");
 		showDefenceActionButtons();
 		unregisterAllTiles();
-//		registerBlueTiles(); //can click player tile
-//		unregisterTouchArea(green_square1);
-//		unregisterTouchArea(green_square2);
-//		unregisterTouchArea(green_square3);
-//		unregisterTouchArea(green_square4);
+		// registerBlueTiles(); //can click player tile
+		// unregisterTouchArea(green_square1);
+		// unregisterTouchArea(green_square2);
+		// unregisterTouchArea(green_square3);
+		// unregisterTouchArea(green_square4);
 		attackTurn = false;
 	}
 
-	
 	private void setActionTextBlinking(CharSequence text) {
 		LoopEntityModifier blinkModifier = new LoopEntityModifier(
 				new SequenceEntityModifier(new FadeOutModifier(0.25f),
@@ -605,62 +684,82 @@ public class GameScene extends BaseScene {
 		registerTouchArea(green_square2);
 		registerTouchArea(green_square3);
 		registerTouchArea(green_square4);
+//		LoopEntityModifier blinkModifier = new LoopEntityModifier(
+//				new SequenceEntityModifier(new FadeOutModifier(0.25f),
+//						new FadeInModifier(0.25f)), 2);
+//		enemyTileGroup.registerEntityModifier(blinkModifier);
 	}
-	
+
 	private void enableDefence() {
 		registerTouchArea(blue_square1);
 		registerTouchArea(blue_square2);
 		registerTouchArea(blue_square3);
 		registerTouchArea(blue_square4);
+//		LoopEntityModifier blinkModifier = new LoopEntityModifier(
+//				new SequenceEntityModifier(new FadeOutModifier(0.25f),
+//						new FadeInModifier(0.25f)), 2);
+//		playerTileGroup.registerEntityModifier(blinkModifier);
 	}
 
-
 	private void hideActionButtons() {
-		SceneManager.getInstance().getCurrentScene()
-				.detachChild(demoActionButton1);
-		SceneManager.getInstance().getCurrentScene()
-				.detachChild(demoActionButton2);
-		SceneManager.getInstance().getCurrentScene()
-				.detachChild(demoActionButton3);
-		SceneManager.getInstance().getCurrentScene()
-				.detachChild(demoActionButton4);
+		// SceneManager.getInstance().getCurrentScene()
+		// .detachChild(demoActionButton1);
+		// SceneManager.getInstance().getCurrentScene()
+		// .detachChild(demoActionButton2);
+		// SceneManager.getInstance().getCurrentScene()
+		// .detachChild(demoActionButton3);
+		// SceneManager.getInstance().getCurrentScene()
+		// .detachChild(demoActionButton4);
 
-		unregisterTouchArea(demoActionButton1);
-		unregisterTouchArea(demoActionButton2);
-		unregisterTouchArea(demoActionButton3);
-		unregisterTouchArea(demoActionButton4);
+		shotActionButton.setVisible(false);
+		moveActionButton.setVisible(false);
+		skillActionButton.setVisible(false);
+		itemActionButton.setVisible(false);
+
+		unregisterTouchArea(shotActionButton);
+		unregisterTouchArea(moveActionButton);
+		unregisterTouchArea(skillActionButton);
+		unregisterTouchArea(itemActionButton);
 	}
 
 	private void showAttackActionButtons() {
-		attachChild(demoActionButton1);
-		//attachChild(demoActionButton2);
-		attachChild(demoActionButton3);
-		attachChild(demoActionButton4);
+		// attachChild(demoActionButton1);
+		// //attachChild(demoActionButton2);
+		// attachChild(demoActionButton3);
+		// attachChild(demoActionButton4);
 
-		registerTouchArea(demoActionButton1);
-		//registerTouchArea(demoActionButton2);
-		registerTouchArea(demoActionButton3);
-		registerTouchArea(demoActionButton4);
+		shotActionButton.setVisible(true);
+		skillActionButton.setVisible(true);
+		itemActionButton.setVisible(true);
+
+		registerTouchArea(shotActionButton);
+		// registerTouchArea(demoActionButton2);
+		registerTouchArea(skillActionButton);
+		registerTouchArea(itemActionButton);
 	}
-	
+
 	private void showDefenceActionButtons() {
-		//attachChild(demoActionButton1);
-		attachChild(demoActionButton2);
-		attachChild(demoActionButton3);
-		attachChild(demoActionButton4);
+		// //attachChild(demoActionButton1);
+		// attachChild(demoActionButton2);
+		// attachChild(demoActionButton3);
+		// attachChild(demoActionButton4);
 
-		//registerTouchArea(demoActionButton1);
-		registerTouchArea(demoActionButton2);
-		registerTouchArea(demoActionButton3);
-		registerTouchArea(demoActionButton4);
+		moveActionButton.setVisible(true);
+		skillActionButton.setVisible(true);
+		itemActionButton.setVisible(true);
+
+		// registerTouchArea(demoActionButton1);
+		registerTouchArea(moveActionButton);
+		registerTouchArea(skillActionButton);
+		registerTouchArea(itemActionButton);
 	}
-	
-	private void unregisterAllTiles(){
+
+	private void unregisterAllTiles() {
 		unregisterTouchArea(blue_square1);
 		unregisterTouchArea(blue_square2);
 		unregisterTouchArea(blue_square3);
 		unregisterTouchArea(blue_square4);
-		
+
 		unregisterTouchArea(green_square1);
 		unregisterTouchArea(green_square2);
 		unregisterTouchArea(green_square3);

@@ -1,6 +1,7 @@
 package com.snowrain.gameprojectproto;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
@@ -11,7 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
-public class PlayerTile extends Sprite {
+public class PlayerTile extends Rectangle {
 
 	private Player player;
 	private float locX, locY;
@@ -22,9 +23,9 @@ public class PlayerTile extends Sprite {
 	private Context mContext;
 
 	public PlayerTile(float pX, float pY, float pWidth, float pHeight,
-			ITextureRegion pTextureRegion, VertexBufferObjectManager vbom,
-			Player player, int tileNumber, Context context) {
-		super(pX, pY, pWidth, pHeight, pTextureRegion, vbom);
+			VertexBufferObjectManager vbom, Player player, int tileNumber,
+			Context context) {
+		super(pX, pY, pWidth, pHeight, vbom);
 		// TODO Auto-generated constructor stub
 		this.player = player;
 		this.locX = pX;
@@ -45,11 +46,11 @@ public class PlayerTile extends Sprite {
 			float pTouchAreaLocalX, float pTouchAreaLocalY) {
 		if (pSceneTouchEvent.isActionDown()) {
 			// if (!playerTurn) {
-			//Log.e("Tile", "touched" + tileNmber);
-			//****Player defense turn movement (when blue square is clicked)
-			
+			// Log.e("Tile", "touched" + tileNmber);
+			// ****Player defense turn movement (when blue square is clicked)
+
 			player.startRunningToPoint(locX, locY);
-			//player.setLocation(tileNmber);
+			// player.setLocation(tileNmber);
 
 			Intent i = new Intent("myTurnAction");
 			i.putExtra("TileLoc", tileNmber);
