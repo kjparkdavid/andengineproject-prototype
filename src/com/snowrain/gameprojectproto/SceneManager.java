@@ -17,6 +17,7 @@ public class SceneManager
     private BaseScene gameScene;
     private BaseScene loadingScene;
     private BaseScene optionScene;
+    private BaseScene shopScene;
     //---------------------------------------------
     // VARIABLES
     //---------------------------------------------
@@ -176,5 +177,21 @@ public class SceneManager
                 setScene(optionScene); //and then set scene
             }
         }));
+    }
+    public void loadShopScene(final Engine mEngine)
+    {
+    	setScene(loadingScene);
+    	ResourcesManager.getInstance().unloadMenuTextures();
+    	mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback()
+    	{
+			public void onTimePassed(final TimerHandler pTimerHandler) 
+			{
+				mEngine.unregisterUpdateHandler(pTimerHandler);
+				ResourcesManager.getInstance().loadShopResources();
+				shopScene = new ShopScene();
+				setScene(shopScene);
+			}
+    		
+    	}));
     }
 }

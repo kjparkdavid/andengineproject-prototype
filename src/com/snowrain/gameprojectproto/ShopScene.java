@@ -14,13 +14,12 @@ import org.andengine.opengl.util.GLState;
 
 import com.snowrain.gameprojectproto.SceneManager.SceneType;
 
-public class OptionScene extends BaseScene implements
+public class ShopScene extends BaseScene implements 
 		IOnMenuItemClickListener {
-	private Sprite option;
-
+	private Sprite shop;
 	
-	public void createScene() {
-		createBackground();
+	public void createScene () {
+		createBackground ();		
 	}
 	
 	private void createBackground() {
@@ -29,12 +28,10 @@ public class OptionScene extends BaseScene implements
 			@Override
 			protected void preDraw(GLState pGLState, Camera pCamera) {
 				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-				
+				pGLState.enableDither();		
 			}
 		});
 	}
-	
 
 	@Override
 	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
@@ -60,4 +57,5 @@ public class OptionScene extends BaseScene implements
 		// TODO Auto-generated method stub
 		
 	}
-}
+			
+			}
