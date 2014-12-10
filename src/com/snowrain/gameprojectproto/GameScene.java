@@ -58,6 +58,8 @@ public class GameScene extends BaseScene {
 
 	private BroadcastReceiver myTurnReceiver;
 
+	private LoopEntityModifier blinkModifier1, blinkModifier2,blinkModifier3,blinkModifier4 ;
+
 	@Override
 	public void createScene() {
 
@@ -71,6 +73,7 @@ public class GameScene extends BaseScene {
 				int catchsuccess = r.nextInt(100);
 
 				if (attackTurn) { // Player attack (click on red tiles)
+					hideEnemyBlinkingTile();
 
 					int attackLoc = intent.getIntExtra("TileLoc", 1);
 					int AIMovement = r.nextInt(9 - 5) + 5; // gives random
@@ -102,6 +105,8 @@ public class GameScene extends BaseScene {
 						endAttackTurn();
 					}
 				} else { // Player Defense turn (clicks on blue tile)
+					hidePlayerBlinkingTile();
+
 					// Random r = new Random();
 					int defenseLoc = intent.getIntExtra("TileLoc", 1);
 					int AIMovement = r.nextInt(5 - 1) + 1; // 1 to 4
@@ -146,6 +151,15 @@ public class GameScene extends BaseScene {
 
 		LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(activity);
 		lbm.registerReceiver(myTurnReceiver, new IntentFilter("myTurnAction"));
+
+		blinkModifier1 = new LoopEntityModifier(new SequenceEntityModifier(
+				new FadeOutModifier(0.25f), new FadeInModifier(0.25f)));
+		blinkModifier2 = new LoopEntityModifier(new SequenceEntityModifier(
+				new FadeOutModifier(0.25f), new FadeInModifier(0.25f)));
+		blinkModifier3 = new LoopEntityModifier(new SequenceEntityModifier(
+				new FadeOutModifier(0.25f), new FadeInModifier(0.25f)));
+		blinkModifier4 = new LoopEntityModifier(new SequenceEntityModifier(
+				new FadeOutModifier(0.25f), new FadeInModifier(0.25f)));
 		// ********If game loop is required
 		// this.registerUpdateHandler(new IUpdateHandler() {
 		// public void reset() {
@@ -267,7 +281,7 @@ public class GameScene extends BaseScene {
 	}
 
 	private void attachAssets() {
-		//Make tile Layer
+		// Make tile Layer
 		playerTileGroup = new org.andengine.entity.Entity();
 		enemyTileGroup = new org.andengine.entity.Entity();
 		playerTileGroup.attachChild(blue_square1);
@@ -278,14 +292,17 @@ public class GameScene extends BaseScene {
 		enemyTileGroup.attachChild(green_square2);
 		enemyTileGroup.attachChild(green_square3);
 		enemyTileGroup.attachChild(green_square4);
-//		attachChild(enemyTileGroup);
-//		attachChild(playerTileGroup);
+		// attachChild(enemyTileGroup);
+		// attachChild(playerTileGroup);
 		attachChild(game_background);
-		attachChild(player);
-		attachChild(enemyPlayer);
+
+		enemyTileGroup.setVisible(false);
+		playerTileGroup.setVisible(false);
 		attachChild(enemyTileGroup);
 		attachChild(playerTileGroup);
 
+		attachChild(player);
+		attachChild(enemyPlayer);
 	}
 
 	private void createPlayer() {
@@ -454,11 +471,11 @@ public class GameScene extends BaseScene {
 	}
 
 	private void setActionTextBlinking(CharSequence text) {
-		LoopEntityModifier blinkModifier = new LoopEntityModifier(
+		LoopEntityModifier blinkTwiceModifier = new LoopEntityModifier(
 				new SequenceEntityModifier(new FadeOutModifier(0.25f),
 						new FadeInModifier(0.25f)), 2);
 		actionText.setText(text);
-		actionText.registerEntityModifier(blinkModifier);
+		actionText.registerEntityModifier(blinkTwiceModifier);
 	}
 
 	// private void loadLevel(int levelID)
@@ -684,10 +701,19 @@ public class GameScene extends BaseScene {
 		registerTouchArea(green_square2);
 		registerTouchArea(green_square3);
 		registerTouchArea(green_square4);
-//		LoopEntityModifier blinkModifier = new LoopEntityModifier(
-//				new SequenceEntityModifier(new FadeOutModifier(0.25f),
-//						new FadeInModifier(0.25f)), 2);
-//		enemyTileGroup.registerEntityModifier(blinkModifier);
+		showEnemyBlinkingTile();
+		// LoopEntityModifier blinkModifier = new LoopEntityModifier(
+		// new SequenceEntityModifier(new FadeOutModifier(0.25f),
+		// new FadeInModifier(0.25f)), 2);
+		// enemyTileGroup.registerEntityModifier(blinkModifier);
+	}
+
+	private void showEnemyBlinkingTile() {
+		enemyTileGroup.setVisible(true);
+		green_square1.registerEntityModifier(blinkModifier1);
+		green_square2.registerEntityModifier(blinkModifier2);
+		green_square3.registerEntityModifier(blinkModifier3);
+		green_square4.registerEntityModifier(blinkModifier4);
 	}
 
 	private void enableDefence() {
@@ -695,10 +721,17 @@ public class GameScene extends BaseScene {
 		registerTouchArea(blue_square2);
 		registerTouchArea(blue_square3);
 		registerTouchArea(blue_square4);
-//		LoopEntityModifier blinkModifier = new LoopEntityModifier(
-//				new SequenceEntityModifier(new FadeOutModifier(0.25f),
-//						new FadeInModifier(0.25f)), 2);
-//		playerTileGroup.registerEntityModifier(blinkModifier);
+
+		// playerTileGroup.registerEntityModifier(blinkModifier);
+		showPlayerBlinkingTile();
+	}
+
+	private void showPlayerBlinkingTile() {
+		playerTileGroup.setVisible(true);
+		blue_square1.registerEntityModifier(blinkModifier1);
+		blue_square2.registerEntityModifier(blinkModifier2);
+		blue_square3.registerEntityModifier(blinkModifier3);
+		blue_square4.registerEntityModifier(blinkModifier4);
 	}
 
 	private void hideActionButtons() {
@@ -764,6 +797,27 @@ public class GameScene extends BaseScene {
 		unregisterTouchArea(green_square2);
 		unregisterTouchArea(green_square3);
 		unregisterTouchArea(green_square4);
+	}
+
+	private void hidePlayerBlinkingTile() {
+		playerTileGroup.setVisible(false); // hide boxes
+		blue_square1.unregisterEntityModifier(blinkModifier1); // unregister
+																// blinking
+																// or
+																// they
+																// will
+																// stack
+		blue_square2.unregisterEntityModifier(blinkModifier2);
+		blue_square3.unregisterEntityModifier(blinkModifier3);
+		blue_square4.unregisterEntityModifier(blinkModifier4);
+	}
+
+	private void hideEnemyBlinkingTile() {
+		enemyTileGroup.setVisible(false); // hide the boxes
+		green_square1.unregisterEntityModifier(blinkModifier1);
+		green_square2.unregisterEntityModifier(blinkModifier2);
+		green_square3.unregisterEntityModifier(blinkModifier3);
+		green_square4.unregisterEntityModifier(blinkModifier4);
 	}
 
 }
