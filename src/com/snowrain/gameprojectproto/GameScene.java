@@ -36,15 +36,14 @@ import com.snowrain.gameprojectproto.SceneManager.SceneType;
 public class GameScene extends BaseScene {
 
 	private HUD gameHUD;
-	private Text skillText1, skillText2, actionText;
+	private Text playerHPText, enemyHPText, actionText;
 	// private Text shotText, moveText, skillText, restText, itemText;
 	private int score = 0;
 	private Rectangle blue_square1, blue_square2, blue_square3, blue_square4,
 			green_square1, green_square2, green_square3, green_square4;
 	private org.andengine.entity.Entity playerTileGroup, enemyTileGroup;
 	private Sprite game_background, red_circle;
-	private Sprite shotActionButton, moveActionButton, skillActionButton,
-			itemActionButton;
+	private Sprite skillActionButton, itemActionButton, hpBarDemoatTop;
 	private Rectangle flash_effect;
 
 	private PhysicsWorld physicsWorld;
@@ -88,19 +87,23 @@ public class GameScene extends BaseScene {
 					// actionText.setText("You attacked " + clickedLoc);
 					if (attackLoc == AIMovement) {
 						if (catchsuccess < 20
-								&& enemyPrevLoc == enemyPlayer.getLocation()) { // 10
-																				// percent
-																				// of
-																				// catching
-																				// the
-																				// ball
-																				// and
-																				// didn't
-																				// move
+								&& enemyPrevLoc == enemyPlayer.getLocation()) {
 
 							setActionTextBlinking("Catch Success!");
-						} else {
-							enemyPlayer.onDie(); // ideally hp --;
+						} else { // hit enemy
+							// enemyPlayer.onDie(); // ideally hp --;
+							int currentHP = enemyPlayer.getHP();
+							enemyPlayer.setHP(currentHP - 1);
+							if (enemyPlayer.getHP() <= 0) {
+								enemyPlayer.onDie();
+								unregisterAllTiles();
+								setEnemyHPTextBlinking("You win!");
+							} else {
+								setEnemyHPTextBlinking("HP: "
+										+ enemyPlayer.getHP());
+								// setActionTextBlinking("Enemy hit!");
+								endAttackTurn();
+							}
 						}
 					} else { // End Turn: enemy turn to attack
 						endAttackTurn();
@@ -117,19 +120,23 @@ public class GameScene extends BaseScene {
 					showDemoBallFromEnemy(AIMovement);
 					if (defenseLoc == AIMovement) {
 						if (catchsuccess < 20
-								&& playerPrevLoc == player.getLocation()) { // 10
-																			// percent
-																			// of
-																			// catching
-																			// the
-																			// ball
-																			// and
-																			// didn't
-																			// move
+								&& playerPrevLoc == player.getLocation()) {
 
 							setActionTextBlinking("Catch Success!");
 						} else {
-							player.onDie(); // ideally hp --;
+							// player.onDie(); // ideally hp --;
+							int currentHP = player.getHP();
+							player.setHP(currentHP - 1);
+							if (player.getHP() <= 0) {
+								player.onDie();
+								unregisterAllTiles();
+								setPlayerHPTextBlinking("You Lose");
+							} else {
+								setPlayerHPTextBlinking("HP: " + player.getHP());
+								// setActionTextBlinking("You are hit!");
+								endDefenseTurn();
+							}
+
 						}
 					} else { // End Turn: your turn to attack
 						endDefenseTurn();
@@ -161,9 +168,12 @@ public class GameScene extends BaseScene {
 				new FadeOutModifier(0.25f), new FadeInModifier(0.25f)));
 		blinkModifier4 = new LoopEntityModifier(new SequenceEntityModifier(
 				new FadeOutModifier(0.25f), new FadeInModifier(0.25f)));
-		
-		//-----------------------init start attacking first
-		enableAttack();
+
+		// -----------------------init start attacking first
+		// enableAttack();
+		enemyHPText.setText("HP: " + enemyPlayer.getHP());
+		playerHPText.setText("HP: " + player.getHP());
+
 		// ********If game loop is required
 		// this.registerUpdateHandler(new IUpdateHandler() {
 		// public void reset() {
@@ -210,6 +220,7 @@ public class GameScene extends BaseScene {
 						// TODO Auto-generated method stub
 						SceneManager.getInstance().getCurrentScene()
 								.detachChild(battleStartAnimation);
+						enableAttack();// start attacking after the animaton
 						// SceneManager.getInstance().getCurrentScene().detachChild(flash_effect);
 					}
 
@@ -343,23 +354,27 @@ public class GameScene extends BaseScene {
 		// CREATE SCORE TEXT
 		// IMPORTANT to put all 0123456789 in the text field to initiallize or
 		// it will lag
-		// skillText1 = new Text(20, 650, resourcesManager.font, "Skill 1",
-		// new TextOptions(HorizontalAlign.LEFT), vbom);
-		// // scoreText.setAnchorCenter(0, 0);
-		// skillText1.setText("Skill 1");
-		// gameHUD.attachChild(skillText1);
-		//
-		// skillText2 = new Text(1100, 650, resourcesManager.font, "Skill 2",
-		// new TextOptions(HorizontalAlign.LEFT), vbom);
-		// // scoreText.setAnchorCenter(0, 0);
-		// skillText2.setText("Skill 2");
-		// gameHUD.attachChild(skillText2);
+		playerHPText = new Text(20, 70, resourcesManager.font,
+				"HP: 0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+		// scoreText.setAnchorCenter(0, 0);
+		// playerHPText.setText("HP: 8");
+		gameHUD.attachChild(playerHPText);
+
+		enemyHPText = new Text(1100, 70, resourcesManager.font,
+				"HP: 0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+		// scoreText.setAnchorCenter(0, 0);
+		// enemyHPText.setText("HP: 8");
+		gameHUD.attachChild(enemyHPText);
 
 		actionText = new Text(550, 550, resourcesManager.font,
 				"your turn win lose!", new TextOptions(HorizontalAlign.CENTER),
 				vbom);
 		actionText.setText("Your Turn!");
 		gameHUD.attachChild(actionText);
+
+		hpBarDemoatTop = new Sprite(0, 10, resourcesManager.hpBarDemo, vbom);
+		gameHUD.attachChild(hpBarDemoatTop);
+		
 		camera.setHUD(gameHUD);
 	}
 
@@ -388,31 +403,31 @@ public class GameScene extends BaseScene {
 		 * demoActionButton4 = new Sprite(0, 550,
 		 * resourcesManager.demo_action_button, vbom);
 		 */
-//		shotActionButton = new Sprite(300, 600, 225, 120,
-//				resourcesManager.shotActionButton, vbom) {
-//			@Override
-//			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-//					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-//				enableAttack();
-//				hideActionButtons();
-//
-//				return true;
-//			}
-//		};
-//		moveActionButton = new Sprite(300, 600, 225, 120,
-//				resourcesManager.moveActionButton, vbom) {
-//			@Override
-//			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-//					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-//				enableDefence(); // movement in playertile
-//				hideActionButtons();
-//				return true;
-//			}
-//		};
-		skillActionButton = new Sprite(100, 600, 225, 120,
+		// shotActionButton = new Sprite(300, 600, 225, 120,
+		// resourcesManager.shotActionButton, vbom) {
+		// @Override
+		// public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+		// float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		// enableAttack();
+		// hideActionButtons();
+		//
+		// return true;
+		// }
+		// };
+		// moveActionButton = new Sprite(300, 600, 225, 120,
+		// resourcesManager.moveActionButton, vbom) {
+		// @Override
+		// public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+		// float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		// enableDefence(); // movement in playertile
+		// hideActionButtons();
+		// return true;
+		// }
+		// };
+		skillActionButton = new Sprite(50, 620, 150, 80,
 				resourcesManager.skillActionButton, vbom);
 
-		itemActionButton = new Sprite(950, 600, 225, 120,
+		itemActionButton = new Sprite(1070, 620, 150, 80,
 				resourcesManager.itemActionButton, vbom);
 		// showAttackActionButtons();
 
@@ -422,14 +437,12 @@ public class GameScene extends BaseScene {
 		attachChild(skillActionButton);
 		attachChild(itemActionButton);
 
-		//moveActionButton.setVisible(false);
+		// moveActionButton.setVisible(false);
 
 		// registerTouchArea(shotActionButton);
 		// registerTouchArea(demoActionButton2);
 		registerTouchArea(skillActionButton);
 		registerTouchArea(itemActionButton);
-		
-		
 
 	}
 
@@ -454,7 +467,7 @@ public class GameScene extends BaseScene {
 
 	private void endDefenseTurn() {
 		setActionTextBlinking("Your Turn!");
-		//showAttackActionButtons();
+		// showAttackActionButtons();
 		unregisterAllTiles();
 		enableAttack();
 		// unregisterTouchArea(blue_square1);
@@ -467,7 +480,7 @@ public class GameScene extends BaseScene {
 
 	private void endAttackTurn() {
 		setActionTextBlinking("Enemy Turn!");
-		//showDefenceActionButtons();
+		// showDefenceActionButtons();
 		unregisterAllTiles();
 		enableDefence();
 		// registerBlueTiles(); //can click player tile
@@ -484,6 +497,22 @@ public class GameScene extends BaseScene {
 						new FadeInModifier(0.25f)), 2);
 		actionText.setText(text);
 		actionText.registerEntityModifier(blinkTwiceModifier);
+	}
+
+	private void setPlayerHPTextBlinking(CharSequence text) {
+		LoopEntityModifier blinkTwiceModifier = new LoopEntityModifier(
+				new SequenceEntityModifier(new FadeOutModifier(0.25f),
+						new FadeInModifier(0.25f)), 2);
+		playerHPText.setText(text);
+		playerHPText.registerEntityModifier(blinkTwiceModifier);
+	}
+
+	private void setEnemyHPTextBlinking(CharSequence text) {
+		LoopEntityModifier blinkTwiceModifier = new LoopEntityModifier(
+				new SequenceEntityModifier(new FadeOutModifier(0.25f),
+						new FadeInModifier(0.25f)), 2);
+		enemyHPText.setText(text);
+		enemyHPText.registerEntityModifier(blinkTwiceModifier);
 	}
 
 	// private void loadLevel(int levelID)
@@ -752,13 +781,13 @@ public class GameScene extends BaseScene {
 		// SceneManager.getInstance().getCurrentScene()
 		// .detachChild(demoActionButton4);
 
-		//shotActionButton.setVisible(false);
-		//moveActionButton.setVisible(false);
+		// shotActionButton.setVisible(false);
+		// moveActionButton.setVisible(false);
 		skillActionButton.setVisible(false);
 		itemActionButton.setVisible(false);
 
-		//unregisterTouchArea(shotActionButton);
-		//unregisterTouchArea(moveActionButton);
+		// unregisterTouchArea(shotActionButton);
+		// unregisterTouchArea(moveActionButton);
 		unregisterTouchArea(skillActionButton);
 		unregisterTouchArea(itemActionButton);
 	}
@@ -769,11 +798,11 @@ public class GameScene extends BaseScene {
 		// attachChild(demoActionButton3);
 		// attachChild(demoActionButton4);
 
-		//shotActionButton.setVisible(true);
+		// shotActionButton.setVisible(true);
 		skillActionButton.setVisible(true);
 		itemActionButton.setVisible(true);
 
-		//registerTouchArea(shotActionButton);
+		// registerTouchArea(shotActionButton);
 		// registerTouchArea(demoActionButton2);
 		registerTouchArea(skillActionButton);
 		registerTouchArea(itemActionButton);
@@ -785,12 +814,12 @@ public class GameScene extends BaseScene {
 		// attachChild(demoActionButton3);
 		// attachChild(demoActionButton4);
 
-		//moveActionButton.setVisible(true);
+		// moveActionButton.setVisible(true);
 		skillActionButton.setVisible(true);
 		itemActionButton.setVisible(true);
 
 		// registerTouchArea(demoActionButton1);
-		//registerTouchArea(moveActionButton);
+		// registerTouchArea(moveActionButton);
 		registerTouchArea(skillActionButton);
 		registerTouchArea(itemActionButton);
 	}

@@ -18,7 +18,7 @@ public abstract class Player extends AnimatedSprite {
 
 	private boolean canRun = true;
 
-	private int location;
+	private int location, hp, sp;
 
 	// ---------------------------------------------
 	// CONSTRUCTOR
@@ -32,6 +32,8 @@ public abstract class Player extends AnimatedSprite {
 		// startRunningToPoint();
 		// stopRunning();
 		location = curLocation;
+		hp = 2;
+		sp = 0;
 	}
 
 	public abstract void onDie();
@@ -83,7 +85,7 @@ public abstract class Player extends AnimatedSprite {
 				protected void onModifierStarted(IEntity pItem) {
 					super.onModifierStarted(pItem);
 					// Your action after starting modifier
-					if(pItem.getX() == x && pItem.getY() == y){
+					if (pItem.getX() == x && pItem.getY() == y) {
 						return;
 					} else {
 						setRunning();
@@ -132,5 +134,21 @@ public abstract class Player extends AnimatedSprite {
 		default:
 			break;
 		}
+	}
+
+	public void setHP(int newHP) {
+		this.hp = newHP;
+	}
+
+	public int getHP() {
+		return this.hp;
+	}
+
+	public void setSP(int newSP) {
+		this.sp = newSP;
+	}
+
+	public int getSP() {
+		return this.sp;
 	}
 }

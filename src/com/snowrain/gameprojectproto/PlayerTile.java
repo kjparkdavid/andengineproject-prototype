@@ -33,6 +33,8 @@ public class PlayerTile extends Rectangle {
 		this.tileNmber = tileNumber;
 		this.mContext = context;
 		isPlayerHere = false;
+		
+		//this.setAlpha(0.75f);
 	}
 
 	@Override

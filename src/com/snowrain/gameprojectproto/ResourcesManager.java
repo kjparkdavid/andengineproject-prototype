@@ -56,10 +56,8 @@ public class ResourcesManager {
 
 	// 4. Game Scene
 	public BuildableBitmapTextureAtlas gameTextureAtlas;
-	public ITextureRegion blue_square, blue_square2, blue_square3,
-			blue_square4, green_square, green_square2, green_square3,
-			green_square4, game_background_region, red_circle;
-	public ITextureRegion shotActionButton, moveActionButton, skillActionButton, itemActionButton;
+	public ITextureRegion game_background_region, red_circle, hpBarDemo;
+	public ITextureRegion skillActionButton, itemActionButton;
 	// 5. Player asset
 
 	// 6. Setting asset
@@ -181,6 +179,9 @@ public class ResourcesManager {
 		
 		battleStartRegion = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(gameTextureAtlas, activity, "battleStartSprite.png",2,1); 
+		
+		hpBarDemo = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "hpBarDemo.png");
 
 		try {
 			this.gameTextureAtlas
