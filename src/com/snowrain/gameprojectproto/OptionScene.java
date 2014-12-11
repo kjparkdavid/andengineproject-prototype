@@ -47,6 +47,9 @@ public class OptionScene extends BaseScene implements
 	public void onBackKeyPressed() {
 		// TODO Auto-generated method stub
 		
+		SceneManager.getInstance().loadMenuScene(engine, "OptionScene");
+
+
 	}
 
 	@Override
@@ -58,6 +61,7 @@ public class OptionScene extends BaseScene implements
 	@Override
 	public void disposeScene() {
 		// TODO Auto-generated method stub
-		
+		ResourcesManager.getInstance().unloadOptionTextures();  
+
 	}
 }
