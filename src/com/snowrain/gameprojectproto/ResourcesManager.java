@@ -165,11 +165,11 @@ public class ResourcesManager {
 		red_circle = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				gameTextureAtlas, activity, "red_circle.png");
 		
-		shotActionButton =  BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				gameTextureAtlas, activity, "shotActionButton.png");
-		
-		moveActionButton =  BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				gameTextureAtlas, activity, "moveActionButton.png");
+//		shotActionButton =  BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+//				gameTextureAtlas, activity, "shotActionButton.png");
+//		
+//		moveActionButton =  BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+//				gameTextureAtlas, activity, "moveActionButton.png");
 		skillActionButton =  BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				gameTextureAtlas, activity, "skillActionButton.png");
 		itemActionButton =  BitmapTextureAtlasTextureRegionFactory.createFromAsset(

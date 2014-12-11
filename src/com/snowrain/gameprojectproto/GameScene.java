@@ -58,7 +58,8 @@ public class GameScene extends BaseScene {
 
 	private BroadcastReceiver myTurnReceiver;
 
-	private LoopEntityModifier blinkModifier1, blinkModifier2,blinkModifier3,blinkModifier4 ;
+	private LoopEntityModifier blinkModifier1, blinkModifier2, blinkModifier3,
+			blinkModifier4;
 
 	@Override
 	public void createScene() {
@@ -160,6 +161,9 @@ public class GameScene extends BaseScene {
 				new FadeOutModifier(0.25f), new FadeInModifier(0.25f)));
 		blinkModifier4 = new LoopEntityModifier(new SequenceEntityModifier(
 				new FadeOutModifier(0.25f), new FadeInModifier(0.25f)));
+		
+		//-----------------------init start attacking first
+		enableAttack();
 		// ********If game loop is required
 		// this.registerUpdateHandler(new IUpdateHandler() {
 		// public void reset() {
@@ -384,46 +388,48 @@ public class GameScene extends BaseScene {
 		 * demoActionButton4 = new Sprite(0, 550,
 		 * resourcesManager.demo_action_button, vbom);
 		 */
-		shotActionButton = new Sprite(300, 600, 225, 120,
-				resourcesManager.shotActionButton, vbom) {
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				enableAttack();
-				hideActionButtons();
-
-				return true;
-			}
-		};
-		moveActionButton = new Sprite(300, 600, 225, 120,
-				resourcesManager.moveActionButton, vbom) {
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				enableDefence(); // movement in playertile
-				hideActionButtons();
-				return true;
-			}
-		};
-		skillActionButton = new Sprite(550, 600, 225, 120,
+//		shotActionButton = new Sprite(300, 600, 225, 120,
+//				resourcesManager.shotActionButton, vbom) {
+//			@Override
+//			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+//					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+//				enableAttack();
+//				hideActionButtons();
+//
+//				return true;
+//			}
+//		};
+//		moveActionButton = new Sprite(300, 600, 225, 120,
+//				resourcesManager.moveActionButton, vbom) {
+//			@Override
+//			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+//					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+//				enableDefence(); // movement in playertile
+//				hideActionButtons();
+//				return true;
+//			}
+//		};
+		skillActionButton = new Sprite(100, 600, 225, 120,
 				resourcesManager.skillActionButton, vbom);
 
-		itemActionButton = new Sprite(800, 600, 225, 120,
+		itemActionButton = new Sprite(950, 600, 225, 120,
 				resourcesManager.itemActionButton, vbom);
 		// showAttackActionButtons();
 
 		// initialize buttons when game starts
-		attachChild(shotActionButton);
-		attachChild(moveActionButton);
+		// attachChild(shotActionButton);
+		// attachChild(moveActionButton);
 		attachChild(skillActionButton);
 		attachChild(itemActionButton);
 
-		moveActionButton.setVisible(false);
+		//moveActionButton.setVisible(false);
 
-		registerTouchArea(shotActionButton);
+		// registerTouchArea(shotActionButton);
 		// registerTouchArea(demoActionButton2);
 		registerTouchArea(skillActionButton);
 		registerTouchArea(itemActionButton);
+		
+		
 
 	}
 
@@ -448,8 +454,9 @@ public class GameScene extends BaseScene {
 
 	private void endDefenseTurn() {
 		setActionTextBlinking("Your Turn!");
-		showAttackActionButtons();
+		//showAttackActionButtons();
 		unregisterAllTiles();
+		enableAttack();
 		// unregisterTouchArea(blue_square1);
 		// unregisterTouchArea(blue_square2);
 		// unregisterTouchArea(blue_square3);
@@ -460,8 +467,9 @@ public class GameScene extends BaseScene {
 
 	private void endAttackTurn() {
 		setActionTextBlinking("Enemy Turn!");
-		showDefenceActionButtons();
+		//showDefenceActionButtons();
 		unregisterAllTiles();
+		enableDefence();
 		// registerBlueTiles(); //can click player tile
 		// unregisterTouchArea(green_square1);
 		// unregisterTouchArea(green_square2);
@@ -744,13 +752,13 @@ public class GameScene extends BaseScene {
 		// SceneManager.getInstance().getCurrentScene()
 		// .detachChild(demoActionButton4);
 
-		shotActionButton.setVisible(false);
-		moveActionButton.setVisible(false);
+		//shotActionButton.setVisible(false);
+		//moveActionButton.setVisible(false);
 		skillActionButton.setVisible(false);
 		itemActionButton.setVisible(false);
 
-		unregisterTouchArea(shotActionButton);
-		unregisterTouchArea(moveActionButton);
+		//unregisterTouchArea(shotActionButton);
+		//unregisterTouchArea(moveActionButton);
 		unregisterTouchArea(skillActionButton);
 		unregisterTouchArea(itemActionButton);
 	}
@@ -761,11 +769,11 @@ public class GameScene extends BaseScene {
 		// attachChild(demoActionButton3);
 		// attachChild(demoActionButton4);
 
-		shotActionButton.setVisible(true);
+		//shotActionButton.setVisible(true);
 		skillActionButton.setVisible(true);
 		itemActionButton.setVisible(true);
 
-		registerTouchArea(shotActionButton);
+		//registerTouchArea(shotActionButton);
 		// registerTouchArea(demoActionButton2);
 		registerTouchArea(skillActionButton);
 		registerTouchArea(itemActionButton);
@@ -777,12 +785,12 @@ public class GameScene extends BaseScene {
 		// attachChild(demoActionButton3);
 		// attachChild(demoActionButton4);
 
-		moveActionButton.setVisible(true);
+		//moveActionButton.setVisible(true);
 		skillActionButton.setVisible(true);
 		itemActionButton.setVisible(true);
 
 		// registerTouchArea(demoActionButton1);
-		registerTouchArea(moveActionButton);
+		//registerTouchArea(moveActionButton);
 		registerTouchArea(skillActionButton);
 		registerTouchArea(itemActionButton);
 	}
