@@ -135,6 +135,7 @@ public class SceneManager
     
     public void loadMenuScene(final Engine mEngine, String sceneType)
     {
+    	//hy's change
         setScene(loadingScene);
         if (sceneType.equalsIgnoreCase("gamescene"))
     	{
