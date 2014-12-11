@@ -69,12 +69,21 @@ public class ResourcesManager {
 	private ITextureRegion option_region;
 	public ITiledTextureRegion player_region, battleStartRegion;
 
+	// 7. Shop asset
+	public ITextureRegion shop_background_region;
+	private BuildableBitmapTextureAtlas shopTextureAtlas;
+	private ITexture shopTexture;
+	private ITextureRegion shop_area;
 	// ---------------------------------------------
 	// CLASS LOGIC
 	// ---------------------------------------------
 
 	public void loadOptionResources() {
 		loadOptionGraphics();
+	}
+	
+	public void loadShopResources() {
+		loadShopGraphics();
 	}
 	
 	public void loadMenuResources() {
@@ -138,6 +147,7 @@ public class ResourcesManager {
 	public void loadMenuTextures() {
 		menuTextureAtlas.load();
 	}
+
 
 	private void loadGameGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
@@ -232,6 +242,11 @@ public class ResourcesManager {
 		optionTexture.unload();
 		option_region = null;
 	}
+	
+	public void unloadShopScene() {
+		shopTexture.unload();
+		shop_area = null;
+	}
 
 	/**
 	 * @param engine
@@ -271,6 +286,24 @@ public class ResourcesManager {
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
 							0, 1, 0));
 			this.settingTextureAtlas.load();
+		} catch (final TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
+	}
+	private void loadShopGraphics() {
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/shop/");
+		shopTextureAtlas = new BuildableBitmapTextureAtlas(
+				activity.getTextureManager(), 1280, 1280,
+				TextureOptions.BILINEAR);
+		shop_background_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(settingTextureAtlas, activity,
+						"shop_background.jpg");
+		
+		try {
+			this.shopTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 1, 0));
+			this.shopTextureAtlas.load();
 		} catch (final TextureAtlasBuilderException e) {
 			Debug.e(e);
 		}
