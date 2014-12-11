@@ -56,7 +56,7 @@ public class ResourcesManager {
 
 	// 4. Game Scene
 	public BuildableBitmapTextureAtlas gameTextureAtlas;
-	public ITextureRegion game_background_region, red_circle, hpBarDemo;
+	public ITextureRegion game_background_region, red_circle, hpBarDemo, skillArt1;
 	public ITextureRegion skillActionButton, itemActionButton;
 	// 5. Player asset
 
@@ -182,6 +182,9 @@ public class ResourcesManager {
 		
 		hpBarDemo = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				gameTextureAtlas, activity, "hpBarDemo.png");
+		
+		skillArt1 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "skillButton1.png");
 
 		try {
 			this.gameTextureAtlas

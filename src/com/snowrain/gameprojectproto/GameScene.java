@@ -43,7 +43,8 @@ public class GameScene extends BaseScene {
 			green_square1, green_square2, green_square3, green_square4;
 	private org.andengine.entity.Entity playerTileGroup, enemyTileGroup;
 	private Sprite game_background, red_circle;
-	private Sprite skillActionButton, itemActionButton, hpBarDemoatTop;
+	private Sprite skillActionButton, itemActionButton, hpBarDemoatTop,
+			skillButtonDemo;
 	private Rectangle flash_effect;
 
 	private PhysicsWorld physicsWorld;
@@ -66,6 +67,7 @@ public class GameScene extends BaseScene {
 		// *********Set who attack first (true = player, false = AI)
 		attackTurn = true;
 
+		// This is called when a tile is clicked
 		myTurnReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -174,6 +176,11 @@ public class GameScene extends BaseScene {
 		enemyHPText.setText("HP: " + enemyPlayer.getHP());
 		playerHPText.setText("HP: " + player.getHP());
 
+		// attachChild(hpBarDemoatTop);
+		// attachChild(playerHPText);
+		// attachChild(enemyHPText);
+		// attachChild(actionText);
+
 		// ********If game loop is required
 		// this.registerUpdateHandler(new IUpdateHandler() {
 		// public void reset() {
@@ -220,7 +227,11 @@ public class GameScene extends BaseScene {
 						// TODO Auto-generated method stub
 						SceneManager.getInstance().getCurrentScene()
 								.detachChild(battleStartAnimation);
-						enableAttack();// start attacking after the animaton
+						if (attackTurn) {// start attacking after the animaton
+							enableAttack();
+						} else {
+							enableDefence();
+						}
 						// SceneManager.getInstance().getCurrentScene().detachChild(flash_effect);
 					}
 
@@ -318,6 +329,13 @@ public class GameScene extends BaseScene {
 
 		attachChild(player);
 		attachChild(enemyPlayer);
+
+		// --------------------HP Bar and Text DEMO-------------------(REMOVE
+		// LATER)
+		attachChild(hpBarDemoatTop);
+		attachChild(playerHPText);
+		attachChild(enemyHPText);
+		attachChild(actionText);
 	}
 
 	private void createPlayer() {
@@ -358,23 +376,23 @@ public class GameScene extends BaseScene {
 				"HP: 0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
 		// scoreText.setAnchorCenter(0, 0);
 		// playerHPText.setText("HP: 8");
-		gameHUD.attachChild(playerHPText);
+		// gameHUD.attachChild(playerHPText);
 
 		enemyHPText = new Text(1100, 70, resourcesManager.font,
 				"HP: 0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
 		// scoreText.setAnchorCenter(0, 0);
 		// enemyHPText.setText("HP: 8");
-		gameHUD.attachChild(enemyHPText);
+		// gameHUD.attachChild(enemyHPText);
 
 		actionText = new Text(550, 550, resourcesManager.font,
 				"your turn win lose!", new TextOptions(HorizontalAlign.CENTER),
 				vbom);
 		actionText.setText("Your Turn!");
-		gameHUD.attachChild(actionText);
+		// gameHUD.attachChild(actionText);
 
 		hpBarDemoatTop = new Sprite(0, 10, resourcesManager.hpBarDemo, vbom);
-		gameHUD.attachChild(hpBarDemoatTop);
-		
+		// gameHUD.attachChild(hpBarDemoatTop);
+
 		camera.setHUD(gameHUD);
 	}
 
@@ -425,17 +443,45 @@ public class GameScene extends BaseScene {
 		// }
 		// };
 		skillActionButton = new Sprite(50, 620, 150, 80,
-				resourcesManager.skillActionButton, vbom);
+				resourcesManager.skillActionButton, vbom) {
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				// TODO Auto-generated method stub
+				if (pSceneTouchEvent.isActionDown()) {
+					skillButtonDemo.setVisible(true);
+					registerTouchArea(skillButtonDemo);
+					camera.setCenter(320, 360);
+					return true;
+				}
+				return false;
+			}
+		};
 
 		itemActionButton = new Sprite(1070, 620, 150, 80,
 				resourcesManager.itemActionButton, vbom);
 		// showAttackActionButtons();
-
+		skillButtonDemo = new Sprite(-320, 0, resourcesManager.skillArt1, vbom) {
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				// TODO Auto-generated method stub
+				if (pSceneTouchEvent.isActionDown()) {
+					skillButtonDemo.setVisible(false);
+					unregisterTouchArea(skillButtonDemo);
+					camera.setCenter(640, 360);
+					return true;
+				}
+				return false;
+			}
+		};
+		skillButtonDemo.setVisible(false);
 		// initialize buttons when game starts
 		// attachChild(shotActionButton);
 		// attachChild(moveActionButton);
 		attachChild(skillActionButton);
 		attachChild(itemActionButton);
+		attachChild(skillButtonDemo);
 
 		// moveActionButton.setVisible(false);
 
