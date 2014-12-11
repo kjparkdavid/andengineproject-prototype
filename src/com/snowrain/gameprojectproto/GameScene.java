@@ -785,6 +785,9 @@ public class GameScene extends BaseScene {
 		registerTouchArea(green_square3);
 		registerTouchArea(green_square4);
 		showEnemyBlinkingTile();
+		int currentPlayerSP = player.getSP();
+		if (currentPlayerSP <= 5)
+		player.setSP(currentPlayerSP +1);
 		// LoopEntityModifier blinkModifier = new LoopEntityModifier(
 		// new SequenceEntityModifier(new FadeOutModifier(0.25f),
 		// new FadeInModifier(0.25f)), 2);
@@ -807,6 +810,10 @@ public class GameScene extends BaseScene {
 
 		// playerTileGroup.registerEntityModifier(blinkModifier);
 		showPlayerBlinkingTile();
+		
+		int currentEnemyPlayerSP = enemyPlayer.getSP();
+		if (currentEnemyPlayerSP <= 5)
+			enemyPlayer.setSP(currentEnemyPlayerSP +1);
 	}
 
 	private void showPlayerBlinkingTile() {
