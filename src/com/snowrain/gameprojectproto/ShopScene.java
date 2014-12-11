@@ -43,7 +43,7 @@ public class ShopScene extends BaseScene implements
 	@Override
 	public void onBackKeyPressed() {
 		// TODO Auto-generated method stub
-		
+		SceneManager.getInstance().loadMenuScene(engine, "ShopScene");
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class ShopScene extends BaseScene implements
 	@Override
 	public void disposeScene() {
 		// TODO Auto-generated method stub
-		
+		ResourcesManager.getInstance().unloadShopTextures();
 	}
 			
 			}

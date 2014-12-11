@@ -222,7 +222,7 @@ public class GameScene extends BaseScene {
 
 	@Override
 	public void onBackKeyPressed() {
-		SceneManager.getInstance().loadMenuScene(engine);
+		SceneManager.getInstance().loadMenuScene(engine, "GameScene");
 	}
 
 	@Override
