@@ -207,6 +207,12 @@ public class ResourcesManager {
 		// TODO (Since we did not create any textures for game scene yet)
 		gameTextureAtlas.unload();
 	}
+	public void unloadOptionTextures() {
+		settingTextureAtlas.unload();
+	}
+	public void unloadShopTextures() {
+		shopTextureAtlas.unload();
+	}
 
 	public void loadSplashScreen() {
 		// BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");

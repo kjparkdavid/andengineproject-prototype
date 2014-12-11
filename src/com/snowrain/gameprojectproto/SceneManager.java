@@ -92,7 +92,7 @@ public class SceneManager
     //---------------------------------------------
     // Loading Scenes
     //---------------------------------------------
-    
+ 
     public void createSplashScene(OnCreateSceneCallback pOnCreateSceneCallback)
     {
         ResourcesManager.getInstance().loadSplashScreen();
@@ -133,10 +133,22 @@ public class SceneManager
         }));
     }
     
-    public void loadMenuScene(final Engine mEngine)
+    public void loadMenuScene(final Engine mEngine, String sceneType)
     {
+    	//hy's change
         setScene(loadingScene);
-        gameScene.disposeScene();
+        if (sceneType.equalsIgnoreCase("gamescene"))
+    	{
+    		gameScene.disposeScene();
+    	}  	
+    	else if(sceneType.equalsIgnoreCase("OptionScene"))
+    	{
+    		optionScene.disposeScene();
+    	}
+    	else 
+    	{
+    		shopScene.disposeScene();
+    	}
         //ResourcesManager.getInstance().unloadGameTextures();
         mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() 
         {
@@ -167,7 +179,7 @@ public class SceneManager
         ResourcesManager.getInstance().unloadMenuTextures(); //unload Mainmenu stuff
       //  gameScene.disposeScene();
         //ResourcesManager.getInstance().unloadGameTextures();
-        mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() 
+        mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() //update and make everything in onTimePassed run
         {
             public void onTimePassed(final TimerHandler pTimerHandler) 
             {
