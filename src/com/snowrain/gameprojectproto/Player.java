@@ -32,7 +32,7 @@ public abstract class Player extends AnimatedSprite {
 		// startRunningToPoint();
 		// stopRunning();
 		location = curLocation;
-		hp = 2;
+		hp = 3;
 		sp = 0;
 	}
 
