@@ -15,3 +15,7 @@ Full list
 
 Bookmark
 -http://www.matim-dev.com/full-game-tutorial---part-11.html
+
+
+Features:
+Demo play available- hp, tile blinking ui, skill button, 1v1 computer ai.
